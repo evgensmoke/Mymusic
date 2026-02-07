@@ -45,11 +45,13 @@
         .track-info { flex-grow: 1; overflow: hidden; }
         .track-name { font-weight: 600; font-size: 0.95rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .like-box { text-align: center; min-width: 50px; }
-        .like-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #30363d; transition: 0.3s; }
-        .like-btn.active { color: #f85149; filter: drop-shadow(0 0 5px #f85149); }
-        .like-count { font-size: 0.75rem; color: #8b949e; display: block; }
+        /* ЛАЙКИ */
+        .like-box { text-align: center; min-width: 50px; display: flex; flex-direction: column; align-items: center; }
+        .like-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #30363d; transition: 0.3s; padding: 0; }
+        .like-btn.active { color: #f85149; filter: drop-shadow(0 0 8px rgba(248, 81, 73, 0.6)); transform: scale(1.1); }
+        .like-count { font-size: 0.75rem; color: #8b949e; margin-top: 4px; }
 
+        /* ПЛЕЕР */
         .player-bar {
             position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
             width: 92%; max-width: 500px;
@@ -59,7 +61,7 @@
             border: 1px solid rgba(255,255,255,0.1); z-index: 9999;
         }
 
-        #now-playing { font-size: 0.85rem; text-align: center; margin-bottom: 12px; color: var(--neon); font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #now-playing { font-size: 0.85rem; text-align: center; margin-bottom: 12px; color: var(--neon); font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .progress-container { margin-bottom: 15px; }
         .time-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: #8b949e; margin-bottom: 5px; }
@@ -71,9 +73,11 @@
         
         .c-btn { background: none; border: none; cursor: pointer; fill: #fff; transition: 0.2s; padding: 5px; display: flex; align-items: center; }
         .c-btn:hover { fill: var(--neon); transform: scale(1.1); }
-        .play-btn { background: var(--neon); border-radius: 50%; width: 55px; height: 55px; fill: #000 !important; justify-content: center; }
+        .play-btn { background: var(--neon); border-radius: 50%; width: 55px; height: 55px; fill: #000 !important; justify-content: center; box-shadow: 0 0 15px rgba(0,242,255,0.3); }
+        .play-btn:hover { background: #fff; transform: scale(1.05); }
         
         .download-btn { fill: #8b949e; margin-left: 10px; }
+        .download-btn:hover { fill: #fff; }
         .dummy-side { width: 44px; }
     </style>
 </head>
@@ -84,7 +88,7 @@
 <div id="playlist" class="playlist">Загрузка треков...</div>
 
 <div class="player-bar">
-    <div id="now-playing">Тишина...</div>
+    <div id="now-playing">Выберите трек</div>
     <div class="progress-container">
         <div class="time-labels"><span id="cTime">0:00</span><span id="dTime">0:00</span></div>
         <div class="progress-bg" onclick="seek(event)"><div id="progress-bar"></div></div>
@@ -95,13 +99,19 @@
         <div class="controls">
             <button class="c-btn" onclick="prev()"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg></button>
             <button class="c-btn" onclick="skip(-10)"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
-            <button class="c-btn play-btn" id="pBtn" onclick="toggle()">
-                <svg width="32" height="32" viewBox="0 0 24 24"><path id="pIcon" d="M8 5v14l11-7z"/></svg>
+            
+            <button class="c-btn play-btn" onclick="toggle()">
+                <svg width="32" height="32" viewBox="0 0 24 24">
+                    <path id="pIcon" d="M8 5v14l11-7z"/> 
+                </svg>
             </button>
+            
             <button class="c-btn" onclick="skip(10)"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
             <button class="c-btn" onclick="next()"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
         </div>
-        <button class="c-btn download-btn" onclick="downloadCur()"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
+        <button class="c-btn download-btn" onclick="downloadCur()" title="Скачать">
+            <svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        </button>
     </div>
 </div>
 
@@ -113,27 +123,32 @@
         def: 'https://raw.githubusercontent.com/evgensmoke/Mymusic/main/default.jpg'
     };
 
-    const icons = { play: "M8 5v14l11-7z", pause: "M6 19h4V5H6v14zm8-14v14h4V5h-4z" };
+    // Иконки SVG путей
+    const icons = {
+        play: "M8 5v14l11-7z", // Треугольник
+        pause: "M6 19h4V5H6v14zm8-14v14h4V5h-4z" // Две полоски
+    };
+
     let tracks = [], cur = -1;
     const audio = document.getElementById('player');
+    const pIcon = document.getElementById('pIcon');
 
     async function init() {
         try {
             const res = await fetch(`https://api.github.com/repos/${CFG.u}/${CFG.r}/contents/`);
-            if (!res.ok) throw new Error("GitHub недоступен");
+            if (!res.ok) throw new Error("GitHub не отвечает");
             const data = await res.json();
             
-            // Исправлено: поиск файлов БЕЗ учета регистра расширения
             const mp3s = data.filter(f => f.name.toLowerCase().endsWith('.mp3'));
             const imgs = data.filter(f => /\.(jpg|png|jpeg)$/i.test(f.name));
 
             if (mp3s.length === 0) {
-                document.getElementById('playlist').innerHTML = "В папке нет MP3 файлов.";
+                document.getElementById('playlist').innerHTML = "Нет MP3 файлов.";
                 return;
             }
 
             tracks = mp3s.map(f => {
-                const n = f.name.replace(/\.[^/.]+$/, ""); // Убираем любое расширение
+                const n = f.name.replace(/\.[^/.]+$/, "");
                 const img = imgs.find(i => i.name.toLowerCase().startsWith(n.toLowerCase()));
                 return {
                     id: n,
@@ -143,7 +158,9 @@
             });
             
             render();
+            // Запрашиваем лайки для всех треков
             tracks.forEach(t => updateLikes(t.id));
+
         } catch(e) { 
             document.getElementById('playlist').innerHTML = "Ошибка: " + e.message;
         }
@@ -155,8 +172,8 @@
                 <img src="${t.img}" class="track-img" onerror="this.src='${CFG.def}'">
                 <div class="track-info"><div class="track-name">${t.id}</div></div>
                 <div class="like-box">
-                    <button class="like-btn" id="l-${t.id}" onclick="event.stopPropagation(); vote('${t.id}')">❤️</button>
-                    <span class="like-count" id="c-${t.id}">0</span>
+                    <button class="like-btn" id="l-${i}" onclick="event.stopPropagation(); vote('${t.id}', ${i})">❤️</button>
+                    <span class="like-count" id="c-${i}">...</span>
                 </div>
             </div>
         `).join('');
@@ -165,20 +182,31 @@
     function playT(i) {
         cur = i;
         audio.src = tracks[i].url;
-        audio.play();
+        audio.play().catch(e => console.log("Автоплей заблокирован"));
         document.getElementById('now-playing').innerText = tracks[i].id;
-        document.getElementById('pIcon').setAttribute('d', icons.pause);
+        pIcon.setAttribute('d', icons.pause);
     }
 
     function toggle() {
         if(cur === -1) return playT(0);
-        if(audio.paused) { audio.play(); document.getElementById('pIcon').setAttribute('d', icons.pause); }
-        else { audio.pause(); document.getElementById('pIcon').setAttribute('d', icons.play); }
+        if(audio.paused) {
+            audio.play();
+            pIcon.setAttribute('d', icons.pause);
+        } else {
+            audio.pause();
+            pIcon.setAttribute('d', icons.play);
+        }
     }
 
     function downloadCur() {
-        if(cur === -1) return;
-        window.open(tracks[cur].url, '_blank');
+        if(cur === -1) return alert("Сначала включи песню!");
+        const link = document.createElement('a');
+        link.href = tracks[cur].url;
+        link.download = tracks[cur].id + ".mp3"; // Предлагаем имя файла
+        link.target = "_blank"; // Для мобилок важно
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     function skip(s) { audio.currentTime += s; }
@@ -198,21 +226,44 @@
         audio.currentTime = ((e.clientX - b.left) / b.width) * audio.duration;
     }
 
-    async function vote(id) {
-        const btn = document.getElementById(`l-${id}`);
+    // --- ЛОГИКА ЛАЙКОВ ---
+
+    async function vote(songName, index) {
+        const btn = document.getElementById(`l-${index}`);
+        const countSpan = document.getElementById(`c-${index}`);
+        
+        // Если кнопка красная, значит ставим дизлайк
         const action = btn.classList.contains('active') ? 'dislike' : 'like';
+        
+        // Оптимистично меняем цвет сразу
         btn.classList.toggle('active');
-        const res = await fetch(`/.netlify/functions/vote?id=${encodeURIComponent(id)}&action=${action}`);
-        const data = await res.json();
-        document.getElementById(`c-${id}`).innerText = data.likes || 0;
+
+        try {
+            const res = await fetch(`/.netlify/functions/vote?id=${encodeURIComponent(songName)}&action=${action}`);
+            if(!res.ok) throw new Error("Сервер не ответил");
+            
+            const data = await res.json();
+            countSpan.innerText = data.likes;
+        } catch(e) {
+            console.error(e);
+            // Если ошибка, возвращаем кнопку как было
+            btn.classList.toggle('active');
+            alert("Не удалось поставить лайк. Проверь интернет.");
+        }
     }
 
-    async function updateLikes(id) {
+    async function updateLikes(songName) {
+        // Ищем индекс трека по имени, чтобы найти нужный span
+        const index = tracks.findIndex(t => t.id === songName);
+        if(index === -1) return;
+
         try {
-            const res = await fetch(`/.netlify/functions/vote?id=${encodeURIComponent(id)}&action=get`);
+            const res = await fetch(`/.netlify/functions/vote?id=${encodeURIComponent(songName)}&action=get`);
             const data = await res.json();
-            document.getElementById(`c-${id}`).innerText = data.likes || 0;
-        } catch(e) {}
+            document.getElementById(`c-${index}`).innerText = data.likes || 0;
+        } catch(e) {
+            document.getElementById(`c-${index}`).innerText = "0";
+        }
     }
 
     init();
