@@ -5,21 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EvgenMusic Player</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
-        .player { border: 1px solid #333; padding: 20px; border-radius: 15px; background: #1e1e1e; display: inline-block; }
-        button { background: #ff4081; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #f50057; }
-        #status { margin-top: 15px; font-size: 0.9em; color: #888; }
+        /* Твой крутой темный дизайн */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
+        .player { border: 1px solid #333; padding: 30px; border-radius: 20px; background: #1e1e1e; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: #ff4081; }
+        .song-info { margin-bottom: 20px; font-size: 1.2em; }
+        audio { filter: invert(100%); width: 100%; margin: 15px 0; }
+        button { background: #ff4081; border: none; padding: 12px 25px; color: white; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #f50057; transform: scale(1.05); }
+        #status { margin-top: 15px; font-size: 0.9em; color: #888; height: 20px; }
     </style>
 </head>
 <body>
 
-    <h2>Мой Плеер</h2>
+    <h2>Music Player v2.0</h2>
 
     <div class="player">
-        <p>Сейчас играет: <strong>Весна.mp3</strong></p>
-        <button onclick="sendLike('vesna')">❤️ Поставить лайк</button>
-        <div id="status">Нажми лайк для теста</div>
+        <div class="song-info">
+            <strong>Сейчас играет:</strong><br>
+            <span>Весна.mp3</span>
+        </div>
+
+        <audio controls>
+            <source src="весна.mp3" type="audio/mpeg">
+            Ваш браузер не поддерживает плеер.
+        </audio>
+
+        <br>
+        <button onclick="sendLike('vesna_track_01')">❤️ Лайкнуть песню</button>
+        
+        <div id="status"></div>
     </div>
 
     <form name="likes-v1" data-netlify="true" hidden>
@@ -29,10 +44,11 @@
     <script>
         async function sendLike(songId) {
             const statusDiv = document.getElementById('status');
-            statusDiv.innerText = "Отправка...";
+            statusDiv.innerText = "Отправка лайка...";
+            statusDiv.style.color = "#888";
 
             try {
-                // Шлем запрос на конкретный файл, чтобы Netlify точно перехватил форму
+                // Отправляем данные в Netlify Forms
                 const response = await fetch("/index.html", {
                     method: "POST",
                     headers: { 
@@ -46,15 +62,16 @@
                 });
 
                 if (response.ok) {
-                    statusDiv.innerText = "✅ Лайк улетел в Netlify Forms!";
+                    statusDiv.innerText = "✅ Лайк сохранен в админке!";
                     statusDiv.style.color = "#4caf50";
+                    // Через 3 секунды убираем надпись
+                    setTimeout(() => { statusDiv.innerText = ""; }, 3000);
                 } else {
-                    throw new Error("Сервер ответил кодом " + response.status);
+                    throw new Error("Ошибка связи");
                 }
             } catch (error) {
-                statusDiv.innerText = "❌ " + error.message;
+                statusDiv.innerText = "❌ Ошибка: " + error.message;
                 statusDiv.style.color = "#ff5252";
-                console.error("Ошибка:", error);
             }
         }
     </script>
