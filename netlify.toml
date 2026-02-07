@@ -1,7 +1,10 @@
 [build]
   functions = "netlify/functions"
 
+[functions]
+  node_compatibility = "v18" # Blobs требуют свежую Node.js
+
 [blobs]
-  # Это дает функциям права на чтение и запись в хранилище
+  # Эта настройка автоматически связывает функции с базой
   auto_install = true
   
