@@ -1,45 +1,41 @@
 import { getStore } from "@netlify/blobs";
 
 export default async (req, context) => {
-    // В документации сказано: если мы в Netlify, данные подтянутся сами
-    const store = getStore("music-rating");
-    
+  try {
     const url = new URL(req.url);
     const songId = url.searchParams.get("id");
     const action = url.searchParams.get("action");
 
-    if (!songId) return new Response("Missing ID", { status: 400 });
+    if (!songId) return new Response("No ID", { status: 400 });
 
-    // Превращаем название песни (с пробелами и русскими буквами) 
-    // в безопасный ключ для базы данных
-    const safeKey = Buffer.from(songId).toString('base64')
-                          .replace(/\+/g, '-')
-                          .replace(/\//g, '_')
-                          .replace(/=+$/, '');
+    // Самый простой способ получить хранилище
+    const store = getStore("music-rating");
 
-    try {
-        // Читаем текущие лайки
-        let currentData = await store.get(safeKey, { type: "json" }) || { likes: 0 };
+    // Используем максимально простой ключ для базы
+    const safeKey = Buffer.from(songId).toString('base64').replace(/[^a-zA-Z0-9]/g, '');
 
-        if (action === "like") {
-            currentData.likes += 1;
-        } else if (action === "dislike") {
-            currentData.likes = Math.max(0, currentData.likes - 1);
-        }
+    let data = await store.get(safeKey, { type: "json" }) || { likes: 0 };
 
-        // Записываем обратно, если это не просто запрос "get"
-        if (action !== "get") {
-            await store.setJSON(safeKey, currentData);
-        }
+    if (action === "like") data.likes++;
+    if (action === "dislike") data.likes = Math.max(0, data.likes - 1);
 
-        return new Response(JSON.stringify(currentData), {
-            headers: { 
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*" 
-            }
-        });
-    } catch (err) {
-        // Если база недоступна, мы вернём ошибку, а не просто "0"
-        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    if (action !== "get") {
+      await store.setJSON(safeKey, data);
     }
+
+    return new Response(JSON.stringify(data), {
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
+
+  } catch (error) {
+    // ВНИМАНИЕ: Если всё упадет, мы увидим причину в тексте ответа
+    return new Response(JSON.stringify({ 
+      error: "Ошибка базы", 
+      details: error.message 
+    }), { 
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
 };
