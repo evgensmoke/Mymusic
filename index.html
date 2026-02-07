@@ -3,270 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Music Collection</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <title>EvgenMusic Player</title>
     <style>
-        :root {
-            --bg: #0d1117;
-            --card: #161b22;
-            --neon: #00f2ff;
-            --text: #c9d1d9;
-        }
-
-        body {
-            background: var(--bg); color: var(--text);
-            font-family: -apple-system, system-ui, sans-serif;
-            margin: 0; padding: 20px; padding-bottom: 220px;
-        }
-
-        header { text-align: center; padding: 40px 0; }
-        .main-title {
-            font-family: 'Orbitron', sans-serif; font-size: 1.6rem;
-            letter-spacing: 5px; color: var(--neon); text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
-            animation: flicker 6s infinite;
-        }
-
-        @keyframes flicker {
-            0%, 90%, 100% { opacity: 1; }
-            92%, 96% { opacity: 0.7; }
-            94% { opacity: 0.9; }
-        }
-
-        .playlist { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-        .track-item {
-            display: flex; align-items: center; background: var(--card);
-            border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s; cursor: pointer;
-        }
-        .track-item:hover { border-color: var(--neon); background: #1c2128; transform: translateY(-2px); }
-
-        .track-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-right: 15px; background: #222; }
-        .track-info { flex-grow: 1; overflow: hidden; }
-        .track-name { font-weight: 600; font-size: 0.95rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* ЛАЙКИ */
-        .like-box { text-align: center; min-width: 50px; display: flex; flex-direction: column; align-items: center; }
-        .like-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #30363d; transition: 0.3s; padding: 0; }
-        .like-btn.active { color: #f85149; filter: drop-shadow(0 0 8px rgba(248, 81, 73, 0.6)); transform: scale(1.1); }
-        .like-count { font-size: 0.75rem; color: #8b949e; margin-top: 4px; }
-
-        /* ПЛЕЕР */
-        .player-bar {
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
-            width: 92%; max-width: 500px;
-            background: rgba(22, 27, 34, 0.98); backdrop-filter: blur(15px);
-            border-radius: 28px; padding: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-            border: 1px solid rgba(255,255,255,0.1); z-index: 9999;
-        }
-
-        #now-playing { font-size: 0.85rem; text-align: center; margin-bottom: 12px; color: var(--neon); font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .progress-container { margin-bottom: 15px; }
-        .time-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: #8b949e; margin-bottom: 5px; }
-        .progress-bg { width: 100%; height: 5px; background: #30363d; border-radius: 3px; cursor: pointer; }
-        #progress-bar { width: 0%; height: 100%; background: var(--neon); border-radius: 3px; }
-
-        .controls-wrapper { display: flex; align-items: center; justify-content: space-between; }
-        .controls { display: flex; align-items: center; gap: 15px; flex-grow: 1; justify-content: center; }
-        
-        .c-btn { background: none; border: none; cursor: pointer; fill: #fff; transition: 0.2s; padding: 5px; display: flex; align-items: center; }
-        .c-btn:hover { fill: var(--neon); transform: scale(1.1); }
-        .play-btn { background: var(--neon); border-radius: 50%; width: 55px; height: 55px; fill: #000 !important; justify-content: center; box-shadow: 0 0 15px rgba(0,242,255,0.3); }
-        .play-btn:hover { background: #fff; transform: scale(1.05); }
-        
-        .download-btn { fill: #8b949e; margin-left: 10px; }
-        .download-btn:hover { fill: #fff; }
-        .dummy-side { width: 44px; }
+        body { font-family: sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
+        .player { border: 1px solid #333; padding: 20px; border-radius: 15px; background: #1e1e1e; display: inline-block; }
+        button { background: #ff4081; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #f50057; }
+        #status { margin-top: 15px; font-size: 0.9em; color: #888; }
     </style>
 </head>
 <body>
 
-<header><div class="main-title">My Music Collection</div></header>
+    <h2>Мой Плеер</h2>
 
-<div id="playlist" class="playlist">Загрузка треков...</div>
-
-<div class="player-bar">
-    <div id="now-playing">Выберите трек</div>
-    <div class="progress-container">
-        <div class="time-labels"><span id="cTime">0:00</span><span id="dTime">0:00</span></div>
-        <div class="progress-bg" onclick="seek(event)"><div id="progress-bar"></div></div>
+    <div class="player">
+        <p>Сейчас играет: <strong>Весна.mp3</strong></p>
+        <button onclick="sendLike('vesna')">❤️ Поставить лайк</button>
+        <div id="status">Нажми лайк, чтобы проверить связь</div>
     </div>
-    
-    <div class="controls-wrapper">
-        <div class="dummy-side"></div>
-        <div class="controls">
-            <button class="c-btn" onclick="prev()"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg></button>
-            <button class="c-btn" onclick="skip(-10)"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
-            
-            <button class="c-btn play-btn" onclick="toggle()">
-                <svg width="32" height="32" viewBox="0 0 24 24">
-                    <path id="pIcon" d="M8 5v14l11-7z"/> 
-                </svg>
-            </button>
-            
-            <button class="c-btn" onclick="skip(10)"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
-            <button class="c-btn" onclick="next()"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-        </div>
-        <button class="c-btn download-btn" onclick="downloadCur()" title="Скачать">
-            <svg width="24" height="24" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-        </button>
-    </div>
-</div>
 
-<audio id="player"></audio>
+    <form name="likes-v1" data-netlify="true" hidden>
+        <input type="text" name="songId">
+    </form>
 
-<script>
-    const CFG = {
-        u: 'evgensmoke', r: 'Mymusic',
-        def: 'https://raw.githubusercontent.com/evgensmoke/Mymusic/main/default.jpg'
-    };
+    <script>
+        async function sendLike(songId) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = "Отправка...";
 
-    // Иконки SVG путей
-    const icons = {
-        play: "M8 5v14l11-7z", // Треугольник
-        pause: "M6 19h4V5H6v14zm8-14v14h4V5h-4z" // Две полоски
-    };
+            try {
+                // Отправляем данные методом POST прямо на главную страницу
+                // Netlify перехватит этот запрос, так как имя формы совпадает
+                const response = await fetch("/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams({
+                        "form-name": "likes-v1", // Должно совпадать с name в <form>
+                        "songId": songId
+                    }).toString(),
+                });
 
-    let tracks = [], cur = -1;
-    const audio = document.getElementById('player');
-    const pIcon = document.getElementById('pIcon');
-
-    async function init() {
-        try {
-            const res = await fetch(`https://api.github.com/repos/${CFG.u}/${CFG.r}/contents/`);
-            if (!res.ok) throw new Error("GitHub не отвечает");
-            const data = await res.json();
-            
-            const mp3s = data.filter(f => f.name.toLowerCase().endsWith('.mp3'));
-            const imgs = data.filter(f => /\.(jpg|png|jpeg)$/i.test(f.name));
-
-            if (mp3s.length === 0) {
-                document.getElementById('playlist').innerHTML = "Нет MP3 файлов.";
-                return;
+                if (response.ok) {
+                    statusDiv.innerText = "✅ Лайк улетел в Netlify Forms!";
+                    statusDiv.style.color = "#4caf50";
+                } else {
+                    throw new Error("Ошибка сервера");
+                }
+            } catch (error) {
+                statusDiv.innerText = "❌ Ошибка: " + error.message;
+                statusDiv.style.color = "#ff5252";
             }
-
-            tracks = mp3s.map(f => {
-                const n = f.name.replace(/\.[^/.]+$/, "");
-                const img = imgs.find(i => i.name.toLowerCase().startsWith(n.toLowerCase()));
-                return {
-                    id: n,
-                    url: `https://raw.githubusercontent.com/${CFG.u}/${CFG.r}/main/${encodeURIComponent(f.name)}`,
-                    img: img ? `https://raw.githubusercontent.com/${CFG.u}/${CFG.r}/main/${encodeURIComponent(img.name)}` : CFG.def
-                };
-            });
-            
-            render();
-            // Запрашиваем лайки для всех треков
-            tracks.forEach(t => updateLikes(t.id));
-
-        } catch(e) { 
-            document.getElementById('playlist').innerHTML = "Ошибка: " + e.message;
         }
-    }
+    </script>
 
-    function render() {
-        document.getElementById('playlist').innerHTML = tracks.map((t, i) => `
-            <div class="track-item" onclick="playT(${i})">
-                <img src="${t.img}" class="track-img" onerror="this.src='${CFG.def}'">
-                <div class="track-info"><div class="track-name">${t.id}</div></div>
-                <div class="like-box">
-                    <button class="like-btn" id="l-${i}" onclick="event.stopPropagation(); vote('${t.id}', ${i})">❤️</button>
-                    <span class="like-count" id="c-${i}">...</span>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function playT(i) {
-        cur = i;
-        audio.src = tracks[i].url;
-        audio.play().catch(e => console.log("Автоплей заблокирован"));
-        document.getElementById('now-playing').innerText = tracks[i].id;
-        pIcon.setAttribute('d', icons.pause);
-    }
-
-    function toggle() {
-        if(cur === -1) return playT(0);
-        if(audio.paused) {
-            audio.play();
-            pIcon.setAttribute('d', icons.pause);
-        } else {
-            audio.pause();
-            pIcon.setAttribute('d', icons.play);
-        }
-    }
-
-    function downloadCur() {
-        if(cur === -1) return alert("Сначала включи песню!");
-        const link = document.createElement('a');
-        link.href = tracks[cur].url;
-        link.download = tracks[cur].id + ".mp3"; // Предлагаем имя файла
-        link.target = "_blank"; // Для мобилок важно
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    function skip(s) { audio.currentTime += s; }
-    function next() { cur = (cur + 1) % tracks.length; playT(cur); }
-    function prev() { cur = (cur - 1 + tracks.length) % tracks.length; playT(cur); }
-
-    audio.ontimeupdate = () => {
-        const p = (audio.currentTime / audio.duration) * 100 || 0;
-        document.getElementById('progress-bar').style.width = p + '%';
-        document.getElementById('cTime').innerText = fmt(audio.currentTime);
-    };
-    audio.onloadedmetadata = () => document.getElementById('dTime').innerText = fmt(audio.duration);
-    function fmt(s) { return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0'); }
-
-    function seek(e) {
-        const b = e.target.closest('.progress-bg').getBoundingClientRect();
-        audio.currentTime = ((e.clientX - b.left) / b.width) * audio.duration;
-    }
-
-    // --- ЛОГИКА ЛАЙКОВ ---
-
-    async function vote(songName, index) {
-        const btn = document.getElementById(`l-${index}`);
-        const countSpan = document.getElementById(`c-${index}`);
-        
-        // Если кнопка красная, значит ставим дизлайк
-        const action = btn.classList.contains('active') ? 'dislike' : 'like';
-        
-        // Оптимистично меняем цвет сразу
-        btn.classList.toggle('active');
-
-        try {
-            const res = await fetch(`/.netlify/functions/vote?id=${encodeURIComponent(songName)}&action=${action}`);
-            if(!res.ok) throw new Error("Сервер не ответил");
-            
-            const data = await res.json();
-            countSpan.innerText = data.likes;
-        } catch(e) {
-            console.error(e);
-            // Если ошибка, возвращаем кнопку как было
-            btn.classList.toggle('active');
-            alert("Не удалось поставить лайк. Проверь интернет.");
-        }
-    }
-
-    async function updateLikes(songName) {
-        // Ищем индекс трека по имени, чтобы найти нужный span
-        const index = tracks.findIndex(t => t.id === songName);
-        if(index === -1) return;
-
-        try {
-            const res = await fetch(`/.netlify/functions/vote?id=${encodeURIComponent(songName)}&action=get`);
-            const data = await res.json();
-            document.getElementById(`c-${index}`).innerText = data.likes || 0;
-        } catch(e) {
-            document.getElementById(`c-${index}`).innerText = "0";
-        }
-    }
-
-    init();
-</script>
 </body>
 </html>
