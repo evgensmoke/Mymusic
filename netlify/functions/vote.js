@@ -1,28 +1,27 @@
 import { getStore } from "@netlify/blobs";
 
 export default async (req, context) => {
-  // Настраиваем наше хранилище под названием 'music-rating'
-  const store = getStore("music-rating");
-  const url = new URL(req.url);
-  const songId = url.searchParams.get("id"); // Получаем название песни из ссылки
-  const action = url.searchParams.get("action"); // 'like' или 'dislike'
+    const store = getStore("music-rating");
+    const url = new URL(req.url);
+    const songId = url.searchParams.get("id");
+    const action = url.searchParams.get("action");
 
-  if (!songId) return new Response("Missing song ID", { status: 400 });
+    if (!songId) return new Response("Missing ID", { status: 400 });
 
-  // 1. Читаем текущее количество лайков (если нет — будет 0)
-  let currentData = await store.get(songId, { type: "json" }) || { likes: 0 };
+    // Создаем безопасный ключ для базы (Base64), чтобы кириллица не ломала логику
+    const safeKey = Buffer.from(songId).toString('base64');
 
-  // 2. Меняем цифру
-  if (action === "like") {
-    currentData.likes += 1;
-  } else if (action === "dislike") {
-    currentData.likes = Math.max(0, currentData.likes - 1);
-  }
+    let currentData = await store.get(safeKey, { type: "json" }) || { likes: 0 };
 
-  // 3. Записываем обратно в Blobs
-  await store.setJSON(songId, currentData);
+    if (action === "like") {
+        currentData.likes += 1;
+    } else if (action === "dislike") {
+        currentData.likes = Math.max(0, currentData.likes - 1);
+    }
 
-  return new Response(JSON.stringify(currentData), {
-    headers: { "Content-Type": "application/json" }
-  });
+    await store.setJSON(safeKey, currentData);
+
+    return new Response(JSON.stringify(currentData), {
+        headers: { "Content-Type": "application/json" }
+    });
 };
