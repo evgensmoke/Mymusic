@@ -2,9 +2,10 @@
   functions = "netlify/functions"
 
 [functions]
-  node_compatibility = "v18" # Blobs требуют свежую Node.js
+  # Мы просто убираем node_compatibility, так как современные рантаймы 
+  # Netlify и так поддерживают Blobs по умолчанию.
+  external_node_modules = ["@netlify/blobs"]
 
 [blobs]
-  # Эта настройка автоматически связывает функции с базой
   auto_install = true
   
