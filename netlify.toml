@@ -2,7 +2,9 @@
   functions = "netlify/functions"
 
 [functions]
-node_compatibility = "v18"
+  # Мы просто убираем проблемную строку. 
+  # По умолчанию Netlify и так использует актуальную версию Node.js.
+  external_node_modules = ["@netlify/blobs"]
 
 [blobs]
   auto_install = true
