@@ -19,7 +19,7 @@
     <div class="player">
         <p>Сейчас играет: <strong>Весна.mp3</strong></p>
         <button onclick="sendLike('vesna')">❤️ Поставить лайк</button>
-        <div id="status">Нажми лайк, чтобы проверить связь</div>
+        <div id="status">Нажми лайк для теста</div>
     </div>
 
     <form name="likes-v1" data-netlify="true" hidden>
@@ -32,13 +32,15 @@
             statusDiv.innerText = "Отправка...";
 
             try {
-                // Отправляем данные методом POST прямо на главную страницу
-                // Netlify перехватит этот запрос, так как имя формы совпадает
-                const response = await fetch("/", {
+                // Шлем запрос на конкретный файл, чтобы Netlify точно перехватил форму
+                const response = await fetch("/index.html", {
                     method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    headers: { 
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Accept": "application/x-www-form-urlencoded"
+                    },
                     body: new URLSearchParams({
-                        "form-name": "likes-v1", // Должно совпадать с name в <form>
+                        "form-name": "likes-v1",
                         "songId": songId
                     }).toString(),
                 });
@@ -47,11 +49,12 @@
                     statusDiv.innerText = "✅ Лайк улетел в Netlify Forms!";
                     statusDiv.style.color = "#4caf50";
                 } else {
-                    throw new Error("Ошибка сервера");
+                    throw new Error("Сервер ответил кодом " + response.status);
                 }
             } catch (error) {
-                statusDiv.innerText = "❌ Ошибка: " + error.message;
+                statusDiv.innerText = "❌ " + error.message;
                 statusDiv.style.color = "#ff5252";
+                console.error("Ошибка:", error);
             }
         }
     </script>
