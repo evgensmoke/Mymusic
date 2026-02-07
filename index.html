@@ -3,99 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoPlayer: Auto-Sync</title>
+    <title>NeoPlayer v3.5</title>
     <style>
         :root {
-            --bg: #0d1117;
-            --card: #161b22;
-            --accent: #58a6ff;
-            --text: #c9d1d9;
-            --glass: rgba(255, 255, 255, 0.03);
+            --bg: #0a0a0c;
+            --card: #16161e;
+            --accent: #00f2ff;
+            --secondary: #7000ff;
+            --text: #e1e1e6;
         }
 
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: -apple-system, system-ui, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 20px;
-            padding-bottom: 140px; /* Запас под плеер */
+            padding-bottom: 160px;
         }
 
-        /* Красивая шапка */
         header {
             text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #30363d;
-            margin-bottom: 30px;
+            padding: 30px 0;
+            background: linear-gradient(180deg, rgba(112, 0, 255, 0.1) 0%, transparent 100%);
         }
 
-        h1 { font-size: 1.4rem; color: #fff; margin: 0; letter-spacing: 1px; }
+        h1 { font-weight: 300; letter-spacing: 4px; text-transform: uppercase; font-size: 1.2rem; margin: 0; color: var(--accent); }
 
-        /* Компактный список песен */
-        .playlist { max-width: 500px; margin: 0 auto; }
-        
+        .playlist { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+
         .track-item {
             display: flex;
             align-items: center;
             background: var(--card);
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 10px;
-            margin-bottom: 10px;
-            transition: transform 0.2s, border-color 0.2s;
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
             cursor: pointer;
         }
 
-        .track-item:hover { border-color: var(--accent); transform: scale(1.02); }
+        .track-item:hover { border-color: var(--accent); background: rgba(0, 242, 255, 0.05); }
 
-        .track-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-            margin-right: 15px;
-        }
+        .track-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; margin-right: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        .track-info { flex-grow: 1; overflow: hidden; }
-        .track-name { display: block; font-weight: 600; color: #f0f6fc; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .track-info { flex-grow: 1; }
+        .track-name { font-weight: 500; font-size: 0.95rem; color: #fff; }
 
         /* Кнопки лайков */
-        .actions { display: flex; align-items: center; gap: 10px; }
         .like-btn {
             background: none;
             border: none;
-            color: #8b949e;
-            font-size: 1.2rem;
+            color: #444;
+            font-size: 1.3rem;
             cursor: pointer;
-            padding: 5px;
             transition: 0.3s;
         }
-        .like-btn.active { color: #ff2d55; transform: scale(1.2); }
-        .like-count { font-size: 0.8rem; color: #8b949e; min-width: 20px; }
+        .like-btn.active { color: #ff0055; filter: drop-shadow(0 0 5px #ff0055); }
 
-        /* Общий плеер внизу (Sticky) */
-        .bottom-player {
+        /* Плеер-бар */
+        .player-bar {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: rgba(22, 27, 34, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid #444c56;
-            border-radius: 20px;
-            padding: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            z-index: 1000;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(22, 22, 30, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .now-playing-title { text-align: center; font-size: 0.85rem; margin-bottom: 10px; color: var(--accent); font-weight: bold; }
+        #now-playing { font-size: 0.8rem; text-align: center; margin-bottom: 12px; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .player-controls { display: flex; justify-content: space-around; align-items: center; }
-        .p-btn { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
-        
-        #progress-container { width: 100%; height: 4px; background: #30363d; border-radius: 2px; margin-bottom: 10px; cursor: pointer; }
-        #progress-bar { width: 0%; height: 100%; background: var(--accent); border-radius: 2px; }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 30px; }
+
+        .p-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .p-btn:active { transform: scale(0.9); }
+        .play-btn { font-size: 2.5rem; color: var(--accent); }
+
+        /* Прогресс-бар */
+        .progress-wrap { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 15px; position: relative; }
+        #progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--secondary), var(--accent)); border-radius: 10px; transition: 0.1s; }
     </style>
 </head>
 <body>
@@ -104,80 +103,72 @@
     <h1>Music.Space</h1>
 </header>
 
-<div id="playlist" class="playlist">Загрузка коллекции...</div>
+<div id="playlist" class="playlist">Синхронизация с GitHub...</div>
 
-<div class="bottom-player">
-    <div id="now-playing" class="now-playing-title">Выберите трек для старта</div>
-    <div id="progress-container"><div id="progress-bar"></div></div>
-    <div class="player-controls">
+<div class="player-bar">
+    <div id="now-playing">Выключено</div>
+    <div class="progress-wrap"><div id="progress-fill"></div></div>
+    <div class="controls">
         <button class="p-btn" onclick="prevTrack()">⏮</button>
-        <button class="p-btn" id="playPauseBtn" onclick="togglePlay()">▶️</button>
+        <button class="p-btn play-btn" id="masterPlay" onclick="togglePlay()">▶️</button>
         <button class="p-btn" onclick="nextTrack()">⏭</button>
     </div>
 </div>
 
-<audio id="audioEngine"></audio>
+<audio id="mainAudio"></audio>
 
 <script>
     const CONFIG = {
-        user: 'evgensmoke',
+        user: 'evgensmoke', // ИСПРАВЛЕНО: Твой логин GitHub
         repo: 'Mymusic',
-        defaultImg: 'https://via.placeholder.com/150/161b22/c9d1d9?text=Music'
+        defaultImg: 'https://via.placeholder.com/300/16161e/00f2ff?text=Track'
     };
 
     let tracks = [];
     let currentIdx = -1;
-    const audio = document.getElementById('audioEngine');
-    const playBtn = document.getElementById('playPauseBtn');
+    const audio = document.getElementById('mainAudio');
+    const playBtn = document.getElementById('masterPlay');
 
-    // 1. Загрузка треков из GitHub
-    async function loadMusic() {
+    async function init() {
         try {
             const res = await fetch(`https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/`);
             const files = await res.json();
             
             const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
-            const images = files.filter(f => /\.(jpg|png)$/i.test(f.name));
+            const imgs = files.filter(f => /\.(jpg|png|jpeg)$/i.test(f.name));
 
             tracks = mp3s.map(f => {
                 const name = f.name.replace('.mp3', '');
-                const imgFile = images.find(img => img.name.toLowerCase().startsWith(name.toLowerCase()));
+                const img = imgs.find(i => i.name.toLowerCase().startsWith(name.toLowerCase()));
                 return {
-                    name: name,
+                    name,
                     url: `https://raw.githubusercontent.com/${CONFIG.user}/${CONFIG.repo}/main/${encodeURIComponent(f.name)}`,
-                    cover: imgFile ? `https://raw.githubusercontent.com/${CONFIG.user}/${CONFIG.repo}/main/${encodeURIComponent(imgFile.name)}` : CONFIG.defaultImg
+                    cover: img ? `https://raw.githubusercontent.com/${CONFIG.user}/${CONFIG.repo}/main/${encodeURIComponent(img.name)}` : CONFIG.defaultImg
                 };
             });
-
-            renderPlaylist();
-        } catch (e) { document.getElementById('playlist').innerText = "Ошибка загрузки"; }
+            render();
+        } catch (e) { document.getElementById('playlist').innerText = "Ошибка: Проверьте настройки GitHub"; }
     }
 
-    // 2. Отрисовка компактного списка
-    function renderPlaylist() {
-        const container = document.getElementById('playlist');
-        container.innerHTML = tracks.map((t, i) => `
+    function render() {
+        const list = document.getElementById('playlist');
+        list.innerHTML = tracks.map((t, i) => `
             <div class="track-item" onclick="playTrack(${i})">
                 <img src="${t.cover}" class="track-img" onerror="this.src='${CONFIG.defaultImg}'">
                 <div class="track-info">
-                    <span class="track-name">${t.name}</span>
+                    <div class="track-name">${t.name}</div>
                 </div>
-                <div class="actions">
-                    <button class="like-btn" onclick="event.stopPropagation(); vote('${t.name}', 'like', this)">❤️</button>
-                    <span class="like-count" id="count-${t.name}">0</span>
-                </div>
+                <button class="like-btn" onclick="event.stopPropagation(); vote('${t.name}', this)">❤️</button>
             </div>
         `).join('');
     }
 
-    // 3. Логика плеера
-    function playTrack(idx) {
-        currentIdx = idx;
-        const track = tracks[idx];
-        audio.src = track.url;
+    function playTrack(i) {
+        currentIdx = i;
+        audio.src = tracks[i].url;
         audio.play();
         playBtn.innerText = '⏸';
-        document.getElementById('now-playing').innerText = track.name;
+        document.getElementById('now-playing').innerText = tracks[i].name;
     }
 
     function togglePlay() {
@@ -186,39 +177,22 @@
         else { audio.pause(); playBtn.innerText = '▶️'; }
     }
 
-    function nextTrack() {
-        currentIdx = (currentIdx + 1) % tracks.length;
-        playTrack(currentIdx);
-    }
+    function nextTrack() { currentIdx = (currentIdx + 1) % tracks.length; playTrack(currentIdx); }
+    function prevTrack() { currentIdx = (currentIdx - 1 + tracks.length) % tracks.length; playTrack(currentIdx); }
 
-    function prevTrack() {
-        currentIdx = (currentIdx - 1 + tracks.length) % tracks.length;
-        playTrack(currentIdx);
-    }
-
-    // 4. Прогресс-бар
     audio.ontimeupdate = () => {
         const pct = (audio.currentTime / audio.duration) * 100 || 0;
-        document.getElementById('progress-bar').style.width = pct + '%';
+        document.getElementById('progress-fill').style.width = pct + '%';
     };
-
     audio.onended = nextTrack;
 
-    // 5. ЛАЙКИ ЧЕРЕЗ NETLIFY BLOBS
-    async function vote(id, action, btn) {
-        btn.classList.add('active');
-        try {
-            // Вызываем твою функцию vote.js
-            const res = await fetch(`/.netlify/functions/vote?id=${encodeURIComponent(id)}&action=${action}`);
-            const data = await res.json();
-            // Обновляем цифру на экране
-            document.getElementById(`count-${id}`).innerText = data.likes;
-        } catch (e) {
-            console.error("Ошибка лайка:", e);
-        }
+    async function vote(id, btn) {
+        btn.classList.toggle('active');
+        // Запрос к твоей функции на Netlify
+        fetch(`/.netlify/functions/vote?id=${encodeURIComponent(id)}&action=like`);
     }
 
-    loadMusic();
+    init();
 </script>
 </body>
 </html>
