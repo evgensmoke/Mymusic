@@ -1,0 +1,7 @@
+[build]
+  functions = "netlify/functions"
+
+[blobs]
+  # Это дает функциям права на чтение и запись в хранилище
+  auto_install = true
+  
