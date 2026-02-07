@@ -1,6 +1,7 @@
 {
-  "name": "music-player",
+  "name": "evgenmusic",
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
     "@netlify/blobs": "^1.1.0"
   }
