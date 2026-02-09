@@ -48,10 +48,16 @@
 <audio id="player"></audio>
 
 <script>
-    // ТВОИ ДАННЫЕ (УЖЕ ВСТАВИЛ)
     const SUPA_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co";
-    const SUPA_KEY = "Sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks"; // Используем твой publishable
-    const supabase = typeof supabase !== 'undefined' ? supabase.createClient(SUPA_URL, SUPA_KEY) : null;
+    const SUPA_KEY = "Sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks"; 
+    
+    // Инициализация Supabase с проверкой
+    let supabase;
+    try {
+        supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    } catch(e) {
+        console.error("Supabase load error:", e);
+    }
 
     const CFG = { u: 'evgensmoke', r: 'Mymusic', def: 'https://raw.githubusercontent.com/evgensmoke/Mymusic/main/default.jpg' };
     let tracks = [], cur = -1;
@@ -70,8 +76,10 @@
             }));
             
             await render();
-            loadAllLikes(); // Тянем лайки из базы
-        } catch(e) { document.getElementById('playlist').innerHTML = "Ошибка связи."; }
+            if(supabase) loadAllLikes(); 
+        } catch(e) { 
+            document.getElementById('playlist').innerHTML = "Ошибка связи с GitHub."; 
+        }
     }
 
     async function render() {
@@ -101,9 +109,9 @@
         });
     }
 
-    // --- РАБОТА С ЛАЙКАМИ (SUPABASE) ---
     async function loadAllLikes() {
-        const { data } = await supabase.from('likes').select('*');
+        const { data, error } = await supabase.from('likes').select('*');
+        if (error) console.error("Error loading likes:", error);
         if (data) {
             data.forEach(row => {
                 const idx = tracks.findIndex(t => t.id === row.song_id);
@@ -122,10 +130,15 @@
         const newCount = isLike ? currentCount + 1 : Math.max(0, currentCount - 1);
         countEl.innerText = newCount;
 
-        // Магия Supabase: upsert (обновить или создать)
-        await supabase.from('likes').upsert({ song_id: id, count: newCount }, { onConflict: 'song_id' });
+        if(supabase) {
+            const { error } = await supabase
+                .from('likes')
+                .upsert({ song_id: id, count: newCount }, { onConflict: 'song_id' });
+            if (error) console.error("Supabase Vote Error:", error);
+        }
     }
 
+    // Плеер
     function playT(i) {
         cur = i; audio.src = tracks[i].url; audio.play();
         document.getElementById('now-playing').innerText = document.getElementById(`title-${i}`).innerText;
@@ -141,8 +154,8 @@
     function next() { cur = (cur + 1) % tracks.length; playT(cur); }
     function prev() { cur = (cur - 1 + tracks.length) % tracks.length; playT(cur); }
     audio.ontimeupdate = () => { document.getElementById('progress-bar').style.width = (audio.currentTime / audio.duration) * 100 + '%'; };
+    
     init();
 </script>
 </body>
 </html>
-
