@@ -33,11 +33,11 @@
 <body>
 
 <header><div class="main-title">EVGEN MUSIC DB</div></header>
-<div id="playlist" class="playlist">Загрузка системы...</div>
+<div id="playlist" class="playlist">Инициализация нейросети...</div>
 
 <div class="player-bar">
     <div id="now-playing">STANDBY</div>
-    <div class="progress-bg" onclick="seek(event)"><div id="progress-bar"></div></div>
+    <div class="progress-bg" id="p-bg"><div id="progress-bar"></div></div>
     <div class="controls">
         <button class="c-btn" onclick="prev()"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg></button>
         <button class="c-btn play-btn" onclick="toggle()"><svg width="24" height="24" viewBox="0 0 24 24"><path id="pIcon" d="M8 5v14l11-7z"/></svg></button>
@@ -50,53 +50,54 @@
 <script>
     const SUPA_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co";
     const SUPA_KEY = "Sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks"; 
-    
-    // Инициализация Supabase с проверкой
-    let supabase;
-    try {
-        supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-    } catch(e) {
-        console.error("Supabase load error:", e);
-    }
-
     const CFG = { u: 'evgensmoke', r: 'Mymusic', def: 'https://raw.githubusercontent.com/evgensmoke/Mymusic/main/default.jpg' };
-    let tracks = [], cur = -1;
+
+    let tracks = [], cur = -1, supabase;
     const audio = document.getElementById('player');
 
     async function init() {
+        // Запуск Supabase
+        if (window.supabase) {
+            supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+        }
+
         try {
             const res = await fetch(`https://api.github.com/repos/${CFG.u}/${CFG.r}/contents/`);
             const data = await res.json();
-            const mp3s = data.filter(f => f.name.toLowerCase().endsWith('.mp3'));
             
-            tracks = mp3s.map(f => ({
-                id: f.name.replace(/\.[^/.]+$/, ""),
-                url: `https://raw.githubusercontent.com/${CFG.u}/${CFG.r}/main/${encodeURIComponent(f.name)}`,
-                img: CFG.def
-            }));
+            tracks = data
+                .filter(f => f.name.toLowerCase().endsWith('.mp3'))
+                .map(f => ({
+                    id: f.name.replace(/\.[^/.]+$/, ""),
+                    url: `https://raw.githubusercontent.com/${CFG.u}/${CFG.r}/main/${encodeURIComponent(f.name)}`,
+                    img: CFG.def,
+                    title: f.name.replace(/\.[^/.]+$/, "")
+                }));
             
-            await render();
-            if(supabase) loadAllLikes(); 
+            render();
+            if (supabase) loadAllLikes();
+            tracks.forEach((t, i) => readTags(t, i));
+            
         } catch(e) { 
-            document.getElementById('playlist').innerHTML = "Ошибка связи с GitHub."; 
+            document.getElementById('playlist').innerHTML = "Ошибка системы: " + e.message; 
         }
     }
 
-    async function render() {
+    function render() {
         document.getElementById('playlist').innerHTML = tracks.map((t, i) => `
             <div class="track-item" onclick="playT(${i})">
                 <img src="${t.img}" class="track-img" id="img-${i}">
-                <div class="track-info"><div class="track-name" id="title-${i}">${t.id}</div></div>
+                <div class="track-info"><div class="track-name" id="title-${i}">${t.title}</div></div>
                 <div class="like-box">
                     <button class="like-btn" id="l-${i}" onclick="event.stopPropagation(); vote('${t.id}', ${i})">❤️</button>
                     <span class="like-count" id="c-${i}">0</span>
                 </div>
             </div>
         `).join('');
-        tracks.forEach((t, i) => readTags(t, i));
     }
 
     function readTags(track, i) {
+        if (!window.jsmediatags) return;
         jsmediatags.read(track.url, {
             onSuccess: (tag) => {
                 if (tag.tags.picture) {
@@ -110,8 +111,7 @@
     }
 
     async function loadAllLikes() {
-        const { data, error } = await supabase.from('likes').select('*');
-        if (error) console.error("Error loading likes:", error);
+        const { data } = await supabase.from('likes').select('*');
         if (data) {
             data.forEach(row => {
                 const idx = tracks.findIndex(t => t.id === row.song_id);
@@ -130,15 +130,11 @@
         const newCount = isLike ? currentCount + 1 : Math.max(0, currentCount - 1);
         countEl.innerText = newCount;
 
-        if(supabase) {
-            const { error } = await supabase
-                .from('likes')
-                .upsert({ song_id: id, count: newCount }, { onConflict: 'song_id' });
-            if (error) console.error("Supabase Vote Error:", error);
+        if (supabase) {
+            await supabase.from('likes').upsert({ song_id: id, count: newCount }, { onConflict: 'song_id' });
         }
     }
 
-    // Плеер
     function playT(i) {
         cur = i; audio.src = tracks[i].url; audio.play();
         document.getElementById('now-playing').innerText = document.getElementById(`title-${i}`).innerText;
@@ -153,8 +149,17 @@
 
     function next() { cur = (cur + 1) % tracks.length; playT(cur); }
     function prev() { cur = (cur - 1 + tracks.length) % tracks.length; playT(cur); }
-    audio.ontimeupdate = () => { document.getElementById('progress-bar').style.width = (audio.currentTime / audio.duration) * 100 + '%'; };
     
+    document.getElementById('p-bg').onclick = (e) => {
+        const rect = document.getElementById('p-bg').getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / rect.width;
+        audio.currentTime = pos * audio.duration;
+    };
+
+    audio.ontimeupdate = () => { 
+        document.getElementById('progress-bar').style.width = (audio.currentTime / audio.duration) * 100 + '%'; 
+    };
+
     init();
 </script>
 </body>
