@@ -9,249 +9,216 @@
     <style>
         :root { 
             --neon: #00f2ff; 
-            --glass: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --text: #f1f5f9; 
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         body { 
-            background: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 100%);
-            background-attachment: fixed;
-            color: var(--text); 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            margin: 0; 
-            padding: 20px; 
-            min-height: 100vh;
-            padding-bottom: 240px; 
-            user-select: none;
+            background: #020617;
+            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 100%);
+            color: #fff; 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; padding: 20px; 
+            min-height: 100vh; padding-bottom: 240px; 
         }
 
-        header { text-align: center; margin: 30px 0; }
-        .main-title { 
-            font-family: 'Orbitron', sans-serif; 
-            font-size: 1.8rem; 
-            color: var(--neon); 
-            letter-spacing: 5px;
-            text-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
-        }
+        header { text-align: center; margin: 20px 0; }
+        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); letter-spacing: 4px; font-size: 1.6rem; }
 
-        .playlist { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-
-        /* Эффект матового стекла */
+        .playlist { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         .track-item { 
-            display: flex; 
-            align-items: center; 
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px; 
-            padding: 12px; 
-            cursor: pointer; 
-            transition: 0.25s ease;
+            display: flex; align-items: center; background: var(--glass);
+            backdrop-filter: blur(15px); border: 1px solid var(--border);
+            border-radius: 18px; padding: 10px; cursor: pointer; transition: 0.2s;
         }
-        .track-item:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); }
-        .track-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.06); }
+        .track-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.05); }
+        .track-img { width: 50px; height: 50px; border-radius: 10px; margin-right: 15px; object-fit: cover; }
+        .track-info { flex-grow: 1; }
+        .track-name { font-size: 0.9rem; font-weight: bold; }
 
-        .track-img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; margin-right: 15px; background: #000; flex-shrink: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-        .track-info { flex-grow: 1; overflow: hidden; }
-        .track-name { font-weight: 600; font-size: 0.95rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .like-box { text-align: center; min-width: 50px; }
-        .like-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: rgba(255,255,255,0.1); transition: 0.3s; padding: 0; }
-        .like-btn.active { color: #ff4d4d; filter: drop-shadow(0 0 8px rgba(255, 77, 77, 0.5)); }
-        .like-count { font-size: 0.75rem; color: #94a3b8; display: block; margin-top: 2px; }
+        .like-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: rgba(255,255,255,0.1); }
+        .like-btn.active { color: #ff4d4d; }
 
-        /* Стеклянный плеер-бар */
+        /* Плеер */
         .player-bar { 
-            position: fixed; 
-            bottom: 25px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            width: 90%; 
-            max-width: 480px; 
-            background: rgba(10, 15, 25, 0.8);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-radius: 40px; 
-            padding: 20px; 
-            border: 1px solid var(--glass-border);
-            z-index: 1000; 
-            box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+            width: 92%; max-width: 450px; background: rgba(10, 15, 25, 0.85);
+            backdrop-filter: blur(25px); border-radius: 35px; padding: 15px 20px;
+            border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.6);
         }
 
-        #now-playing { font-family: 'Orbitron', sans-serif; color: var(--neon); font-size: 0.8rem; text-align: center; margin-bottom: 15px; opacity: 0.9; }
+        #now-playing { font-size: 0.75rem; text-align: center; color: var(--neon); margin-bottom: 8px; font-family: 'Orbitron'; }
         
-        .progress-bg { height: 5px; background: rgba(255,255,255,0.08); border-radius: 10px; cursor: pointer; margin-bottom: 20px; position: relative; }
-        #progress-bar { width: 0%; height: 100%; background: var(--neon); border-radius: 10px; box-shadow: 0 0 15px var(--neon); transition: width 0.1s linear; }
+        .time-info { display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8; margin-bottom: 5px; }
 
-        /* Идеальная центровка кнопок управления */
-        .controls { 
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 10px;
+        .progress-bg { height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer; margin-bottom: 15px; }
+        #progress-bar { height: 100%; background: var(--neon); width: 0%; border-radius: 4px; box-shadow: 0 0 10px var(--neon); }
+
+        /* Компактное управление */
+        .controls { display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .c-btn { background: none; border: none; cursor: pointer; fill: #fff; opacity: 0.6; padding: 8px; transition: 0.2s; }
+        .c-btn:hover { opacity: 1; fill: var(--neon); }
+        .c-btn.disabled { opacity: 0.1; cursor: default; }
+
+        .play-btn { background: var(--neon); border-radius: 50%; width: 55px; height: 55px; fill: #000 !important; opacity: 1 !important; }
+
+        /* Модалка для текста */
+        #lyrics-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 10001;
         }
-
-        .side-ctrls { display: flex; align-items: center; gap: 15px; }
-
-        .c-btn { background: none; border: none; cursor: pointer; fill: #cbd5e1; display: flex; align-items: center; justify-content: center; transition: 0.2s; padding: 8px; }
-        .c-btn:hover { fill: var(--neon); transform: scale(1.1); }
-        
-        .play-btn { 
-            width: 65px; height: 65px; 
-            background: var(--neon); 
-            border-radius: 50%; 
-            fill: #000 !important; 
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); 
-            transform: scale(1);
+        .lyrics-content { 
+            background: var(--glass); padding: 30px; border-radius: 20px; 
+            max-width: 80%; max-height: 70%; overflow-y: auto; 
+            border: 1px solid var(--border); white-space: pre-wrap; line-height: 1.6;
         }
-        .play-btn:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 242, 255, 0.6); }
     </style>
 </head>
 <body>
 
 <header><div class="main-title">EVGEN MUSIC</div></header>
-<div id="playlist" class="playlist">Загрузка музыкальной базы...</div>
+<div id="playlist" class="playlist"></div>
 
 <div class="player-bar">
     <div id="now-playing">ВЫБЕРИТЕ ТРЕК</div>
+    <div class="time-info">
+        <span id="cur-time">0:00</span>
+        <span id="dur-time">0:00</span>
+    </div>
     <div class="progress-bg" id="p-bg"><div id="progress-bar"></div></div>
+    
     <div class="controls">
-        <div class="side-ctrls">
-            <button class="c-btn" onclick="prev()"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg></button>
-            <button class="c-btn" onclick="skip(-10)"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
-        </div>
-
-        <button class="c-btn play-btn" onclick="toggle()">
-            <svg width="32" height="32" viewBox="0 0 24 24"><path id="pIcon" d="M8 5v14l11-7z"/></svg>
+        <button id="txt-btn" class="c-btn disabled" onclick="showLyrics()">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
         </button>
 
-        <div class="side-ctrls">
-            <button class="c-btn" onclick="skip(10)"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
-            <button class="c-btn" onclick="next()"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-        </div>
+        <button class="c-btn" onclick="prev()"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg></button>
+        
+        <button class="c-btn play-btn" onclick="toggle()">
+            <svg width="28" height="28" viewBox="0 0 24 24"><path id="pIcon" d="M8 5v14l11-7z"/></svg>
+        </button>
+
+        <button class="c-btn" onclick="next()"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+
+        <a id="down-btn" class="c-btn disabled" download href="#">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        </a>
     </div>
+</div>
+
+<div id="lyrics-overlay" onclick="this.style.display='none'">
+    <div class="lyrics-content" id="lyrics-text" onclick="event.stopPropagation()"></div>
 </div>
 
 <audio id="player"></audio>
 
 <script>
-    // ТВОЙ КЛЮЧ И URL (БЕЗ ЛИШНИХ ПРОБЕЛОВ)
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co";
     const S_KEY = "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qeHlqaWF3ZHByZWp2bWJzdnZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxMDE4NjcsImV4cCI6MjA4NTY3Nzg2N30.ZnmxdnR_x0C61C7ZOSWi-Xlgg2gUGmNmz7jBHHGZ9EU";
-    
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic';
-    const DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
-
-    let tracks = [], cur = -1, spb = null;
+    
+    let tracks = [], cur = -1, spb = supabase.createClient(S_URL, S_KEY);
     const audio = document.getElementById('player');
-    const pIcon = document.getElementById('pIcon');
 
     async function init() {
-        try {
-            spb = supabase.createClient(S_URL, S_KEY.trim());
-        } catch(e) { console.error("Критическая ошибка инициализации базы."); }
-
-        try {
-            const res = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/`);
-            const files = await res.json();
-            
-            // Фильтруем MP3 и ищем картинки любых форматов
-            const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
-            
-            tracks = mp3s.map(f => {
-                const base = f.name.replace(/\.[^/.]+$/, "");
-                const extensions = ['.jpg', '.jpeg', '.png', '.webp'];
-                
-                let foundImg = null;
-                for (let ext of extensions) {
-                    const match = files.find(file => file.name.toLowerCase() === (base + ext).toLowerCase());
-                    if (match) { foundImg = match.download_url; break; }
-                }
-
-                return {
-                    id: base,
-                    title: decodeURIComponent(base).replace(/_/g, " "),
-                    url: f.download_url,
-                    img: foundImg || DEF_IMG
-                };
-            });
-
-            render();
-            if (spb) loadLikes();
-        } catch(e) { document.getElementById('playlist').innerText = "GitHub не отдал файлы. Лимит запросов или плохая карма."; }
+        const res = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/`);
+        const files = await res.json();
+        
+        const mp3s = files.filter(f => f.name.endsWith('.mp3'));
+        tracks = mp3s.map(f => {
+            const name = f.name.slice(0, -4);
+            const txtFile = files.find(t => t.name === name + '.txt');
+            return {
+                id: name,
+                title: decodeURIComponent(name).replace(/_/g, ' '),
+                url: f.download_url,
+                img: files.find(i => i.name.startsWith(name) && /\.(jpg|png|webp)$/.test(i.name))?.download_url || 'default.jpg',
+                lyrics: txtFile ? txtFile.download_url : null
+            };
+        });
+        render();
+        loadLikes();
     }
 
     function render() {
         document.getElementById('playlist').innerHTML = tracks.map((t, i) => `
             <div class="track-item" id="item-${i}" onclick="playT(${i})">
-                <img src="${t.img}" onerror="this.src='${DEF_IMG}'" class="track-img">
+                <img src="${t.img}" class="track-img" onerror="this.src='default.jpg'">
                 <div class="track-info"><div class="track-name">${t.title}</div></div>
-                <div class="like-box">
-                    <button class="like-btn" id="l-${i}" onclick="event.stopPropagation(); vote('${t.id}', ${i})">❤️</button>
-                    <span class="like-count" id="c-${i}">0</span>
-                </div>
+                <button class="like-btn" id="l-${i}" onclick="event.stopPropagation(); vote('${t.id}', ${i})">❤️</button>
             </div>`).join('');
-    }
-
-    async function loadLikes() {
-        const { data, error } = await spb.from('likes').select('song_id, count');
-        if (error) {
-            console.warn("База ответила ошибкой:", error.message);
-        } else if (data) {
-            data.forEach(row => {
-                const idx = tracks.findIndex(t => t.id === row.song_id);
-                if (idx !== -1) document.getElementById(`c-${idx}`).innerText = row.count;
-            });
-        }
-    }
-
-    async function vote(songId, idx) {
-        const el = document.getElementById(`c-${idx}`);
-        const btn = document.getElementById(`l-${idx}`);
-        let count = parseInt(el.innerText) || 0;
-        
-        btn.classList.toggle('active');
-        const isAdding = btn.classList.contains('active');
-        const newCount = isAdding ? count + 1 : Math.max(0, count - 1);
-        el.innerText = newCount;
-
-        if (spb) {
-            const { error } = await spb.from('likes').upsert({ song_id: songId, count: newCount }, { onConflict: 'song_id' });
-            if (error) console.error("Лайк не долетел до сервера:", error.message);
-        }
     }
 
     function playT(i) {
         if (cur !== -1) document.getElementById(`item-${cur}`).classList.remove('active');
         cur = i;
+        const t = tracks[i];
         document.getElementById(`item-${cur}`).classList.add('active');
-        audio.src = tracks[i].url;
+        audio.src = t.url;
         audio.play();
-        document.getElementById('now-playing').innerText = tracks[i].title;
-        pIcon.setAttribute('d', "M6 19h4V5H6v14zm8-14v14h4V5h-4z");
+        
+        document.getElementById('now-playing').innerText = t.title;
+        document.getElementById('pIcon').setAttribute('d', "M6 19h4V5H6v14zm8-14v14h4V5h-4z");
+        
+        // Кнопка загрузки
+        const db = document.getElementById('down-btn');
+        db.href = t.url; db.classList.remove('disabled');
+
+        // Кнопка текста
+        const lb = document.getElementById('txt-btn');
+        if (t.lyrics) lb.classList.remove('disabled');
+        else lb.classList.add('disabled');
+    }
+
+    async function showLyrics() {
+        if (cur === -1 || !tracks[cur].lyrics) return;
+        const res = await fetch(tracks[cur].lyrics);
+        const text = await res.text();
+        document.getElementById('lyrics-text').innerText = text;
+        document.getElementById('lyrics-overlay').style.display = 'flex';
     }
 
     function toggle() {
         if (cur === -1) return playT(0);
-        if (audio.paused) { audio.play(); pIcon.setAttribute('d', "M6 19h4V5H6v14zm8-14v14h4V5h-4z"); }
-        else { audio.pause(); pIcon.setAttribute('d', "M8 5v14l11-7z"); }
+        if (audio.paused) { audio.play(); document.getElementById('pIcon').setAttribute('d', "M6 19h4V5H6v14zm8-14v14h4V5h-4z"); }
+        else { audio.pause(); document.getElementById('pIcon').setAttribute('d', "M8 5v14l11-7z"); }
     }
 
-    function skip(s) { audio.currentTime += s; }
-    function next() { playT((cur + 1) % tracks.length); }
-    function prev() { playT((cur - 1 + tracks.length) % tracks.length); }
+    function fmt(s) {
+        const m = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+    }
 
     audio.ontimeupdate = () => {
         const p = (audio.currentTime / audio.duration) * 100 || 0;
         document.getElementById('progress-bar').style.width = p + '%';
+        document.getElementById('cur-time').innerText = fmt(audio.currentTime);
+        document.getElementById('dur-time').innerText = audio.duration ? fmt(audio.duration) : "0:00";
     };
 
     document.getElementById('p-bg').onclick = (e) => {
-        const rect = document.getElementById('p-bg').getBoundingClientRect();
-        audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+        const r = e.currentTarget.getBoundingClientRect();
+        audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
     };
+
+    function next() { playT((cur + 1) % tracks.length); }
+    function prev() { playT((cur - 1 + tracks.length) % tracks.length); }
+
+    async function loadLikes() {
+        const { data } = await spb.from('likes').select('*');
+        data?.forEach(r => {
+            const i = tracks.findIndex(t => t.id === r.song_id);
+            if (i !== -1 && r.count > 0) document.getElementById(`l-${i}`).classList.add('active');
+        });
+    }
+
+    async function vote(id, i) {
+        const btn = document.getElementById(`l-${i}`);
+        btn.classList.toggle('active');
+        await spb.from('likes').upsert({ song_id: id, count: btn.classList.contains('active') ? 1 : 0 });
+    }
 
     init();
 </script>
