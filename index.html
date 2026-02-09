@@ -13,30 +13,31 @@
         header { text-align: center; padding: 20px 0; }
         .main-title { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: var(--neon); letter-spacing: 3px; text-shadow: 0 0 10px rgba(0, 242, 255, 0.4); }
         .playlist { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
-        .track-item { display: flex; align-items: center; background: var(--card); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .track-item { display: flex; align-items: center; background: var(--card); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
+        .track-item:hover { border-color: var(--neon); }
         .track-img { width: 55px; height: 55px; border-radius: 8px; object-fit: cover; margin-right: 15px; background: #222; }
         .track-info { flex-grow: 1; overflow: hidden; }
         .track-name { font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .like-box { text-align: center; min-width: 45px; }
-        .like-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #30363d; transition: 0.3s; }
+        .like-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #30363d; transition: 0.3s; padding: 0; }
         .like-btn.active { color: #f85149; transform: scale(1.2); }
-        .like-count { font-size: 0.7rem; color: #8b949e; display: block; }
+        .like-count { font-size: 0.7rem; color: #8b949e; display: block; margin-top: 2px; }
         .player-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; background: rgba(22, 27, 34, 0.95); backdrop-filter: blur(10px); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); z-index: 9999; }
-        #now-playing { font-size: 0.8rem; text-align: center; margin-bottom: 8px; color: var(--neon); }
+        #now-playing { font-size: 0.8rem; text-align: center; margin-bottom: 8px; color: var(--neon); font-family: 'Orbitron', sans-serif; }
         .progress-bg { width: 100%; height: 4px; background: #30363d; border-radius: 2px; cursor: pointer; margin-bottom: 10px; }
-        #progress-bar { width: 0%; height: 100%; background: var(--neon); }
+        #progress-bar { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 8px var(--neon); }
         .controls { display: flex; align-items: center; justify-content: center; gap: 20px; }
-        .c-btn { background: none; border: none; cursor: pointer; fill: #fff; }
-        .play-btn { background: var(--neon); border-radius: 50%; width: 45px; height: 45px; fill: #000 !important; display: flex; align-items: center; justify-content: center; }
+        .c-btn { background: none; border: none; cursor: pointer; fill: #fff; display: flex; align-items: center; }
+        .play-btn { background: var(--neon); border-radius: 50%; width: 45px; height: 45px; fill: #000 !important; justify-content: center; }
     </style>
 </head>
 <body>
 
 <header><div class="main-title">EVGEN MUSIC DB</div></header>
-<div id="playlist" class="playlist">Инициализация нейросети...</div>
+<div id="playlist" class="playlist">ПОДКЛЮЧЕНИЕ К СЕТИ...</div>
 
 <div class="player-bar">
-    <div id="now-playing">STANDBY</div>
+    <div id="now-playing">SYSTEM STANDBY</div>
     <div class="progress-bg" id="p-bg"><div id="progress-bar"></div></div>
     <div class="controls">
         <button class="c-btn" onclick="prev()"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg></button>
@@ -48,38 +49,47 @@
 <audio id="player"></audio>
 
 <script>
-    const SUPA_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co";
-    const SUPA_KEY = "Sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks"; 
-    const CFG = { u: 'evgensmoke', r: 'Mymusic', def: 'https://raw.githubusercontent.com/evgensmoke/Mymusic/main/default.jpg' };
+    // Конфиг без конфликтов имен
+    const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co";
+    const S_KEY = "Sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks"; 
+    const G_CFG = { u: 'evgensmoke', r: 'Mymusic', def: 'https://raw.githubusercontent.com/evgensmoke/Mymusic/main/default.jpg' };
 
-    let tracks = [], cur = -1, supabase;
+    let tracks = [], cur = -1, spb_client;
     const audio = document.getElementById('player');
 
     async function init() {
-        // Запуск Supabase
-        if (window.supabase) {
-            supabase = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-        }
-
+        console.log("Запуск системы...");
+        
+        // Инициализация Supabase клиента под новым именем
         try {
-            const res = await fetch(`https://api.github.com/repos/${CFG.u}/${CFG.r}/contents/`);
+            if (window.supabase) {
+                spb_client = window.supabase.createClient(S_URL, S_KEY);
+                console.log("Supabase клиент готов.");
+            }
+        } catch(e) { console.error("Ошибка БД:", e); }
+
+        // Загрузка треков
+        try {
+            const res = await fetch(`https://api.github.com/repos/${G_CFG.u}/${G_CFG.r}/contents/`);
             const data = await res.json();
             
+            if (!Array.isArray(data)) throw new Error("GitHub API Error");
+
             tracks = data
                 .filter(f => f.name.toLowerCase().endsWith('.mp3'))
                 .map(f => ({
                     id: f.name.replace(/\.[^/.]+$/, ""),
-                    url: `https://raw.githubusercontent.com/${CFG.u}/${CFG.r}/main/${encodeURIComponent(f.name)}`,
-                    img: CFG.def,
+                    url: `https://raw.githubusercontent.com/${G_CFG.u}/${G_CFG.r}/main/${encodeURIComponent(f.name)}`,
+                    img: G_CFG.def,
                     title: f.name.replace(/\.[^/.]+$/, "")
                 }));
             
             render();
-            if (supabase) loadAllLikes();
-            tracks.forEach((t, i) => readTags(t, i));
+            if (spb_client) loadLikes();
+            tracks.forEach((t, i) => loadMetadata(t, i));
             
         } catch(e) { 
-            document.getElementById('playlist').innerHTML = "Ошибка системы: " + e.message; 
+            document.getElementById('playlist').innerHTML = "КРИТИЧЕСКАЯ ОШИБКА: " + e.message; 
         }
     }
 
@@ -96,7 +106,32 @@
         `).join('');
     }
 
-    function readTags(track, i) {
+    async function loadLikes() {
+        const { data, error } = await spb_client.from('likes').select('*');
+        if (data) {
+            data.forEach(row => {
+                const idx = tracks.findIndex(t => t.id === row.song_id);
+                if (idx !== -1) document.getElementById(`c-${idx}`).innerText = row.count;
+            });
+        }
+    }
+
+    async function vote(songId, idx) {
+        const countEl = document.getElementById(`c-${idx}`);
+        const btn = document.getElementById(`l-${idx}`);
+        let count = parseInt(countEl.innerText);
+
+        btn.classList.toggle('active');
+        const isAdding = btn.classList.contains('active');
+        const newCount = isAdding ? count + 1 : Math.max(0, count - 1);
+        countEl.innerText = newCount;
+
+        if (spb_client) {
+            await spb_client.from('likes').upsert({ song_id: songId, count: newCount }, { onConflict: 'song_id' });
+        }
+    }
+
+    function loadMetadata(track, i) {
         if (!window.jsmediatags) return;
         jsmediatags.read(track.url, {
             onSuccess: (tag) => {
@@ -106,38 +141,14 @@
                     document.getElementById(`img-${i}`).src = `data:${format};base64,${base64}`;
                 }
                 if (tag.tags.title) document.getElementById(`title-${i}`).innerText = tag.tags.title;
-            }
+            },
+            onError: (err) => console.log("Tags error for", track.id, err)
         });
-    }
-
-    async function loadAllLikes() {
-        const { data } = await supabase.from('likes').select('*');
-        if (data) {
-            data.forEach(row => {
-                const idx = tracks.findIndex(t => t.id === row.song_id);
-                if (idx !== -1) document.getElementById(`c-${idx}`).innerText = row.count;
-            });
-        }
-    }
-
-    async function vote(id, i) {
-        const countEl = document.getElementById(`c-${i}`);
-        const btn = document.getElementById(`l-${i}`);
-        let currentCount = parseInt(countEl.innerText);
-
-        btn.classList.toggle('active');
-        const isLike = btn.classList.contains('active');
-        const newCount = isLike ? currentCount + 1 : Math.max(0, currentCount - 1);
-        countEl.innerText = newCount;
-
-        if (supabase) {
-            await supabase.from('likes').upsert({ song_id: id, count: newCount }, { onConflict: 'song_id' });
-        }
     }
 
     function playT(i) {
         cur = i; audio.src = tracks[i].url; audio.play();
-        document.getElementById('now-playing').innerText = document.getElementById(`title-${i}`).innerText;
+        document.getElementById('now-playing').innerText = tracks[i].title.toUpperCase();
         document.getElementById('pIcon').setAttribute('d', "M6 19h4V5H6v14zm8-14v14h4V5h-4z");
     }
 
@@ -152,14 +163,14 @@
     
     document.getElementById('p-bg').onclick = (e) => {
         const rect = document.getElementById('p-bg').getBoundingClientRect();
-        const pos = (e.clientX - rect.left) / rect.width;
-        audio.currentTime = pos * audio.duration;
+        audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
     };
 
     audio.ontimeupdate = () => { 
         document.getElementById('progress-bar').style.width = (audio.currentTime / audio.duration) * 100 + '%'; 
     };
 
+    // Старт
     init();
 </script>
 </body>
