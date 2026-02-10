@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EVGEN MUSIC FINAL BOSS</title>
+    <title>EVGEN MUSIC - THE TRUTH EDITION</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -16,8 +16,7 @@
         header { text-align: center; margin-bottom: 20px; z-index: 2; position: relative; }
         .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); letter-spacing: 3px; font-size: 1.8rem; text-shadow: 0 0 15px rgba(0,242,255,0.5); }
 
-        .search-input { width: 100%; max-width: 500px; display: block; margin: 20px auto; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px 20px; border-radius: 30px; color: #fff; backdrop-filter: blur(10px); transition: 0.3s; }
-        .search-input:focus { border-color: var(--neon); }
+        .search-input { width: 100%; max-width: 500px; display: block; margin: 20px auto; background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 12px 20px; border-radius: 30px; color: #fff; backdrop-filter: blur(10px); }
 
         .playlist { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
         .track-item { display: flex; align-items: center; background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 16px; padding: 10px 15px; cursor: pointer; transition: 0.2s; }
@@ -28,7 +27,7 @@
 
         .actions { display: flex; align-items: center; gap: 8px; }
         .like-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: rgba(255,255,255,0.1); transition: 0.2s; }
-        .like-btn.active { color: #ff4d4d; transform: scale(1.1); }
+        .like-btn.active { color: #ff4d4d; filter: drop-shadow(0 0 5px #ff4d4d); }
 
         .player-bar { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(10, 15, 28, 0.95); backdrop-filter: blur(25px); border-radius: 25px; padding: 15px 20px; border: 1px solid var(--border); z-index: 1000; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
         
@@ -41,13 +40,17 @@
         .progress-bg { height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; cursor: pointer; margin-bottom: 12px; }
         #progress-bar { height: 100%; background: var(--neon); width: 0%; border-radius: 4px; box-shadow: 0 0 10px var(--neon); }
 
-        .controls { display: flex; align-items: center; justify-content: space-between; }
-        .c-btn { background: none; border: none; cursor: pointer; fill: #94a3b8; display: flex; align-items: center; transition: 0.2s; }
-        .play-btn { width: 52px; height: 52px; background: var(--neon); border-radius: 50%; fill: #000 !important; justify-content: center; box-shadow: 0 0 15px rgba(0,242,255,0.3); }
+        /* ИДЕАЛЬНАЯ СЕТКА ДЛЯ КНОПОК */
+        .controls { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; }
+        .c-btn { background: none; border: none; cursor: pointer; fill: #94a3b8; color: #94a3b8; display: flex; align-items: center; transition: 0.2s; padding: 8px; }
+        .c-btn:hover { fill: var(--neon); color: var(--neon); }
+        .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; fill: #000 !important; justify-content: center; margin: 0 10px; }
         
-        .main-ctrls { display: flex; align-items: center; gap: 10px; }
+        .main-ctrls { display: flex; align-items: center; justify-content: center; }
+        .left-box { justify-self: start; }
+        .right-box { justify-self: end; display: flex; gap: 5px; }
 
-        #lyrics-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 2000; padding: 40px 20px; text-align: center; overflow-y: auto; white-space: pre-wrap; font-size: 1.1rem; line-height: 1.6; }
+        #lyrics-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; z-index: 2000; padding: 40px 20px; text-align: center; overflow-y: auto; white-space: pre-wrap; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -55,10 +58,10 @@
 <div id="bg-layer"></div>
 <header>
     <div class="main-title">EVGEN MUSIC</div>
-    <input type="text" id="searchInput" class="search-input" placeholder="Поиск любимого трека..." oninput="filterTracks()">
+    <input type="text" id="searchInput" class="search-input" placeholder="Поиск музыки..." oninput="filterTracks()">
 </header>
 
-<div id="playlist" class="playlist">Синхронизация с Гитхабом...</div>
+<div id="playlist" class="playlist">Синхронизация...</div>
 
 <div class="player-bar">
     <div class="vis-box" id="visualizer"></div>
@@ -68,12 +71,14 @@
     <div class="progress-bg" id="p-bg"><div id="progress-bar"></div></div>
     
     <div class="controls">
-        <button class="c-btn" onclick="openLyrics()" title="Текст">
-            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-        </button>
+        <div class="left-box">
+            <button class="c-btn" onclick="openLyrics()" title="Текст песни">
+                <svg width="22" height="22" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            </button>
+        </div>
 
         <div class="main-ctrls">
-            <button class="c-btn" onclick="prev()"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg></button>
+            <button class="c-btn" onclick="prev()"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 18V6z"/></svg></button>
             <button class="c-btn" onclick="seek(-10)"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
             
             <button class="c-btn play-btn" onclick="toggle()">
@@ -81,12 +86,16 @@
             </button>
 
             <button class="c-btn" onclick="seek(10)"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
-            <button class="c-btn" onclick="next()"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+            <button class="c-btn" onclick="next()"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
         </div>
 
-        <div style="display:flex; gap:12px;">
-            <button class="c-btn" onclick="shareTrack()" title="Поделиться">📤</button>
-            <button class="c-btn" onclick="downloadTrack()" title="Скачать">💾</button>
+        <div class="right-box">
+            <button class="c-btn" onclick="shareTrack()" title="Поделиться">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8m-11-3 4-4 4 4m-4-4v13"/></svg>
+            </button>
+            <button class="c-btn" onclick="downloadTrack()" title="Скачать MP3">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></svg>
+            </button>
         </div>
     </div>
 </div>
@@ -116,7 +125,6 @@
 
             allTracks = mp3s.map(f => {
                 const name = f.name.replace(/\.[^/.]+$/, "");
-                // ВЕРНУЛ ПОДДЕРЖКУ ВСЕХ ФОРМАТОВ КАРТИНОК
                 const img = files.find(file => file.name.startsWith(name) && /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name));
                 const txt = files.find(file => file.name.toLowerCase() === (name + '.txt').toLowerCase());
                 return { 
@@ -128,7 +136,7 @@
             displayedTracks = [...allTracks];
             render();
             loadLikes();
-        } catch(e) { document.getElementById('playlist').innerText = "Ошибка GitHub"; }
+        } catch(e) { document.getElementById('playlist').innerText = "GitHub Error"; }
     }
 
     function render() {
@@ -147,10 +155,16 @@
     }
 
     async function vote(id) {
-        if (localStorage.getItem('lk_'+id) || !spb) return;
+        if (!spb) return;
         const t = allTracks.find(x => x.id === id);
-        t.likes++;
-        localStorage.setItem('lk_'+id, '1');
+        const hasLiked = localStorage.getItem('lk_'+id);
+        if (hasLiked) {
+            t.likes = Math.max(0, t.likes - 1);
+            localStorage.removeItem('lk_'+id);
+        } else {
+            t.likes++;
+            localStorage.setItem('lk_'+id, '1');
+        }
         document.getElementById(`c-${id}`).innerText = t.likes;
         render();
         await spb.from('likes').upsert({ song_id: id, count: t.likes }, { onConflict: 'song_id' });
@@ -159,8 +173,7 @@
     function playById(id) {
         const t = allTracks.find(x => x.id === id);
         if (!t) return;
-        curId = id; audio.src = t.url; audio.play();
-        isPlaying = true;
+        curId = id; audio.src = t.url; audio.play(); isPlaying = true;
         document.getElementById('now-playing').innerText = t.title;
         document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
         document.getElementById('pIcon').setAttribute('d', "M6 19h4V5H6v14zm8-14v14h4V5h-4z");
@@ -203,17 +216,15 @@
     async function openLyrics() {
         const t = allTracks.find(x => x.id === curId);
         if (!t || !t.txt) return;
-        try {
-            const res = await fetch(t.txt);
-            document.getElementById('lyrics-view').innerText = await res.text();
-            document.getElementById('lyrics-view').style.display = 'block';
-        } catch(e) { console.log("Lyrics load error"); }
+        const res = await fetch(t.txt);
+        document.getElementById('lyrics-view').innerText = await res.text();
+        document.getElementById('lyrics-view').style.display = 'block';
     }
 
     function shareTrack() {
         const t = allTracks.find(x => x.id === curId);
         if (navigator.share && t) {
-            navigator.share({ title: t.title, text: 'Слушай со мной!', url: window.location.href });
+            navigator.share({ title: t.title, url: window.location.href });
         }
     }
 
@@ -229,10 +240,29 @@
         }
     }
 
-    function downloadTrack() {
+    // ВОТ ОН - ТОТ САМЫЙ КОРРЕКТНЫЙ МЕТОД ЗАГРУЗКИ
+    async function downloadTrack() {
         if (!curId) return;
         const t = allTracks.find(x => x.id === curId);
-        const a = document.createElement('a'); a.href = t.url; a.download = t.title + ".mp3"; a.click();
+        try {
+            const response = await fetch(t.url);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = t.title + ".mp3";
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (e) {
+            // Если совсем беда, пробуем старый метод
+            const a = document.createElement('a');
+            a.href = t.url;
+            a.download = t.title + ".mp3";
+            a.click();
+        }
     }
 
     init();
