@@ -3,53 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EVGEN MUSIC</title>
+    <title>EVGEN MUSIC CLOUD</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <style>
-        :root { --neon: #00f2ff; --glass: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.15); --fav: #fbbf24; }
+        :root { --neon: #00f2ff; --glass: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.15); }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { background: #020617; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; min-height: 100vh; padding-bottom: 240px; }
+        body { background: #020617; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; min-height: 100vh; padding-bottom: 240px; overflow-x: hidden; }
         #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.15); z-index: -1; transition: 1.5s; }
-        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; font-size: 1.5rem; margin-bottom: 15px; }
-        .search-box { width: 100%; max-width: 500px; margin: 0 auto 20px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; }
+        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
+        .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; }
         
+        /* КАТЕГОРИИ */
         .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 500px; margin: 0 auto 20px; }
         .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; color: #94a3b8; }
         .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
 
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
         .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; }
-        .media-item.active { border-color: var(--neon); }
-        .media-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; }
+        .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
+        .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
         .media-info { flex-grow: 1; overflow: hidden; }
         .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
 
+        /* ПЛЕЕР */
         .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
-        #now-playing { color: var(--neon); text-align: center; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; cursor: pointer; }
-        
-        .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-bottom: 15px; cursor: pointer; }
+        #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; }
+        .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 15px; cursor: pointer; position: relative; }
         #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 10px var(--neon); }
-        
         .controls-row { display: flex; justify-content: space-around; align-items: center; }
         .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; }
         .ctrl-icon { fill: #fff; width: 24px; height: 24px; cursor: pointer; }
 
+        /* НАВИГАЦИЯ */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
-        .nav-item { color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .nav-item { color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
 
-        #text-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; padding: 20px; flex-direction: column; align-items: center; justify-content: center; }
-        #text-content { background: #1e293b; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; max-height: 70vh; overflow-y: auto; white-space: pre-wrap; line-height: 1.5; }
+        /* МОДАЛКА ТЕКСТА */
+        #text-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; padding: 25px; flex-direction: column; justify-content: center; backdrop-filter: blur(10px); }
+        #text-content { background: #1e293b; padding: 20px; border-radius: 20px; overflow-y: auto; max-height: 70vh; white-space: pre-wrap; line-height: 1.6; font-size: 1rem; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
 <div id="bg-layer"></div>
-<div class="main-title">EVGEN MUSIC</div>
-<input type="text" class="search-box" placeholder="Поиск..." id="search-input" oninput="render()">
+<header>
+    <div class="main-title">EVGEN MUSIC</div>
+    <input type="text" class="search-box" placeholder="Поиск..." id="search-input" oninput="render()">
+</header>
 
 <div id="cat-container" class="category-grid">
     <div class="cat-card active" id="btn-music" onclick="setCategory('music')">Музыка</div>
@@ -73,14 +77,16 @@
 </div>
 
 <nav class="bottom-nav">
-    <div class="nav-item active" onclick="setTab('home')">🏠<span>Главная</span></div>
-    <div class="nav-item" onclick="setTab('catalog')">📂<span>Каталог</span></div>
-    <div class="nav-item" onclick="setTab('my')">⭐<span>Моё</span></div>
+    <div class="nav-item active" id="tab-home" onclick="setTab('home')">🏠<span>Главная</span></div>
+    <div class="nav-item" id="tab-catalog" onclick="setTab('catalog')">📂<span>Каталог</span></div>
+    <div class="nav-item" id="tab-my" onclick="setTab('my')">⭐<span>Моё</span></div>
 </nav>
 
 <div id="text-modal" onclick="this.style.display='none'">
     <div id="text-content" onclick="event.stopPropagation()"></div>
 </div>
+
+<audio id="audio-engine" crossorigin="anonymous"></audio>
 
 <script>
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
@@ -88,26 +94,37 @@
     
     let media = { music: [], podcasts: [], photos: [], texts: [] };
     let curTab = 'home', curCat = 'music', curId = null;
-    const audio = new Audio();
-    const supabaseClient = supabase.createClient(S_URL, S_KEY);
+    const audio = document.getElementById('audio-engine');
+    const sb = supabase.createClient(S_URL, S_KEY);
 
     async function init() {
-        const [m, p, i, t] = await Promise.all([fetchGH('music'), fetchGH('podcasts'), fetchGH('photos'), fetchGH('texts')]);
-        media.music = m.filter(f => f.name.endsWith('.mp3')).map(f => ({ id: f.name.replace('.mp3',''), title: decodeURIComponent(f.name.replace('.mp3','')), url: f.download_url, img: DEF_IMG, likes: 0 }));
-        media.podcasts = p.filter(f => f.name.endsWith('.mp3')).map(f => ({ id: f.name.replace('.mp3',''), title: decodeURIComponent(f.name.replace('.mp3','')), url: f.download_url, img: DEF_IMG, likes: 0 }));
+        // Грузим список файлов
+        const [m, p, i, t] = await Promise.all([fGH('music'), fGH('podcasts'), fGH('photos'), fGH('texts')]);
+        
+        const map = (files) => files.filter(f => f.name.endsWith('.mp3')).map(f => ({
+            id: f.name.replace('.mp3',''),
+            title: decodeURIComponent(f.name.replace('.mp3','')),
+            url: f.download_url,
+            img: DEF_IMG,
+            likes: 0,
+            artist: '',
+            lyrics: ''
+        }));
+
+        media.music = map(m);
+        media.podcasts = map(p);
         media.photos = i.filter(f => /\.(jpg|png)$/i.test(f.name));
         media.texts = t.filter(f => f.name.endsWith('.txt'));
 
+        // Синхронизируем с базой сразу (чтобы подтянуть обложки тех, кто уже сканировался ранее)
         await syncDB();
         render();
-        // В фоне сканим теги только для новых
-        media.music.concat(media.podcasts).forEach(track => { if(track.img === DEF_IMG) scanTags(track); });
     }
 
-    async function fetchGH(path) { return fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`).then(r => r.json()).catch(() => []); }
+    async function fGH(path) { return fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`).then(r => r.json()).catch(() => []); }
 
     async function syncDB() {
-        const { data } = await supabaseClient.from('likes').select('*');
+        const { data } = await sb.from('likes').select('*');
         if (data) data.forEach(r => {
             const track = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
             if (track) {
@@ -119,19 +136,36 @@
         });
     }
 
+    // ВОТ ОНО: Берем данные, когда нажали на песню
     function scanTags(t) {
+        // Если артист уже есть в памяти, значит мы уже сканировали этот файл
+        if (t.artist && t.img !== DEF_IMG) return;
+
         jsmediatags.read(t.url, {
-            onSuccess: (tag) => {
+            onSuccess: async (tag) => {
                 let update = { song_id: t.id };
-                if (tag.tags.picture) {
-                    const { data, format } = tag.tags.picture;
+                const tags = tag.tags;
+
+                // 1. Выдираем обложку в Base64
+                if (tags.picture) {
+                    const { data, format } = tags.picture;
                     let base64 = btoa(String.fromCharCode(...data));
                     t.img = `data:${format};base64,${base64}`;
                     update.cover_data = t.img;
                 }
-                if (tag.tags.artist) { t.artist = tag.tags.artist; update.artist = t.artist; }
-                if (tag.tags.lyrics) { t.lyrics = tag.tags.lyrics.lyrics; update.lyrics = t.lyrics; }
-                supabaseClient.from('likes').upsert(update, { onConflict: 'song_id' }).then(() => render());
+
+                // 2. Артист
+                if (tags.artist) { t.artist = tags.artist; update.artist = t.artist; }
+
+                // 3. Текст песни (если есть в тегах)
+                if (tags.lyrics) { t.lyrics = tags.lyrics.lyrics; update.lyrics = t.lyrics; }
+
+                // Сохраняем в Supabase, чтобы в следующий раз не мучить файл
+                await sb.from('likes').upsert(update, { onConflict: 'song_id' });
+                
+                // Обновляем плеер и список
+                document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
+                render();
             }
         });
     }
@@ -142,17 +176,20 @@
         document.getElementById('cat-container').style.display = (curTab === 'catalog') ? 'grid' : 'none';
         container.innerHTML = '';
 
-        let list = (curTab === 'home') ? media.music : (curTab === 'my' ? media.music.filter(x => localStorage.getItem('fav_'+x.id)) : media[curCat]);
-        
+        let list = [];
+        if (curTab === 'home') list = media.music.filter(x => x.likes > 0);
+        else if (curTab === 'my') list = media.music.filter(x => localStorage.getItem('fav_'+x.id));
+        else list = media[curCat];
+
         list.filter(x => x.title?.toLowerCase().includes(search)).forEach(item => {
             const el = document.createElement('div');
             el.className = `media-item ${curId === item.id ? 'active' : ''}`;
             el.onclick = () => play(item);
             el.innerHTML = `
-                <img src="${item.img || DEF_IMG}" class="media-img">
+                <img src="${item.img}" class="media-img">
                 <div class="media-info">
                     <div class="media-name">${item.title}</div>
-                    <div class="media-meta">${item.artist || 'Евгений'} • ${item.likes} ❤️</div>
+                    <div class="media-meta">${item.artist || 'Загрузка...'} • ${item.likes} ❤️</div>
                 </div>
                 <div onclick="event.stopPropagation(); doLike('${item.id}')">${item.likes ? '❤️' : '🤍'}</div>
             `;
@@ -165,6 +202,7 @@
             curId = t.id; audio.src = t.url; audio.play();
             document.getElementById('now-playing').innerText = t.title;
             document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
+            scanTags(t); // Сканируем только при воспроизведении!
         } else toggle();
         render();
     }
@@ -175,33 +213,64 @@
     audio.ontimeupdate = () => { document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100) + '%'; };
 
     async function doLike(id) {
-        const t = media.music.find(x => x.id === id);
+        const t = [...media.music, ...media.podcasts].find(x => x.id === id);
         t.likes = t.likes ? 0 : 1;
-        await supabaseClient.from('likes').upsert({ song_id: id, count: t.likes }, { onConflict: 'song_id' });
         render();
+        await sb.from('likes').upsert({ song_id: id, count: t.likes }, { onConflict: 'song_id' });
     }
 
     async function openLyrics() {
         const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
         if (!t) return;
-        let text = t.lyrics || "Текст не найден в тегах.";
-        document.getElementById('text-content').innerText = text;
+        
+        let text = t.lyrics;
+        if (!text) {
+            // Если в тегах нет, ищем .txt файл в папке texts
+            const txtFile = media.texts.find(x => x.name.replace('.txt','') === t.id);
+            if (txtFile) {
+                const r = await fetch(txtFile.download_url);
+                const buffer = await r.arrayBuffer();
+                text = new TextDecoder("windows-1251").decode(buffer);
+                if (text.includes("")) text = new TextDecoder("utf-8").decode(buffer);
+            }
+        }
+        
+        document.getElementById('text-content').innerText = text || "Текст не найден. Добавьте его в MP3 или загрузите .txt файл.";
         document.getElementById('text-modal').style.display = 'flex';
     }
 
     function downloadTrack() {
         const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if(!t) return;
-        const a = document.createElement('a'); a.href = t.url; a.download = t.title + ".mp3"; a.click();
+        if(t) { const a = document.createElement('a'); a.href = t.url; a.download = t.title + ".mp3"; a.click(); }
     }
 
     function shareTrack() {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if(t && navigator.share) navigator.share({ title: t.title, url: window.location.href });
+        if(navigator.share) navigator.share({ title: 'EVGEN MUSIC', url: window.location.href });
     }
 
-    function setTab(t) { curTab = t; render(); }
-    function setCategory(c) { curCat = c; render(); }
+    function setTab(t) { 
+        curTab = t; 
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-'+t).classList.add('active');
+        render(); 
+    }
+    function setCategory(c) { 
+        curCat = c; 
+        document.querySelectorAll('.cat-card').forEach(el => el.classList.remove('active'));
+        document.getElementById('btn-'+c).classList.add('active');
+        render(); 
+    }
+
+    function nextTrack() {
+        const list = (curTab === 'catalog') ? media[curCat] : media.music;
+        const idx = list.findIndex(x => x.id === curId);
+        if (idx < list.length - 1) play(list[idx+1]);
+    }
+    function prevTrack() {
+        const list = (curTab === 'catalog') ? media[curCat] : media.music;
+        const idx = list.findIndex(x => x.id === curId);
+        if (idx > 0) play(list[idx-1]);
+    }
 
     init();
 </script>
