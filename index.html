@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EVGEN MUSIC PRO</title>
+    <title>EVGEN MUSIC CLOUD</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <style>
-        /* Стили оставляем те же, что были у тебя в рабочем варианте */
         :root { --neon: #00f2ff; --glass: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.15); }
-        body { background: #020617; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; padding-bottom: 240px; }
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { background: #020617; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; min-height: 100vh; padding-bottom: 240px; overflow-x: hidden; }
         #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.15); z-index: -1; transition: 1.5s; }
-        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; font-size: 1.5rem; margin: 15px 0; }
-        .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; }
+        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; letter-spacing: 2px; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
+        .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; }
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; }
+        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; transition: 0.2s; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
-        .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; }
+        .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
         .media-info { flex-grow: 1; overflow: hidden; }
         .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
-        .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
-        #progress-fill { height: 6px; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 10px var(--neon); }
-        .controls-row { display: flex; justify-content: space-around; align-items: center; margin-top: 10px; }
+        .player-panel { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
+        #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; }
+        .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; position: relative; }
+        #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 10px var(--neon); }
+        .controls-row { display: flex; justify-content: space-around; align-items: center; }
         .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; }
     </style>
 </head>
@@ -32,16 +34,14 @@
 <div id="bg-layer"></div>
 <header>
     <div class="main-title">EVGEN MUSIC</div>
-    <input type="text" class="search-box" placeholder="Поиск..." id="search-input" oninput="handleSearch()">
+    <input type="text" class="search-box" placeholder="Поиск музыки..." id="search-input" oninput="render()">
 </header>
 
-<div id="main-content" class="content-grid">Загрузка...</div>
+<div id="main-content" class="content-grid"></div>
 
 <div class="player-panel">
-    <div id="now-playing" style="text-align:center; margin-bottom:10px; color:var(--neon); font-weight:bold;">ВЫБЕРИТЕ ТРЕК</div>
-    <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:3px; margin-bottom:10px;" onclick="seekByBar(event)">
-        <div id="progress-fill"></div>
-    </div>
+    <div id="now-playing">ВЫБЕРИТЕ ТРЕК</div>
+    <div class="progress-area" onclick="seekByBar(event)"><div id="progress-fill"></div></div>
     <div class="controls-row">
         <button onclick="prevTrack()" style="background:none; border:none; fill:#fff;"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
         <div class="play-btn" onclick="toggle()"><svg id="p-icon" width="30" height="30" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
@@ -49,122 +49,120 @@
     </div>
 </div>
 
+<audio id="audio-engine" crossorigin="anonymous"></audio>
+
 <script>
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
     
-    let media = { music: [], podcasts: [] };
-    let curId = null, supabaseClient = null;
-    const audio = document.getElementById('audio-engine') || new Audio();
+    let tracks = [], curId = null, supabaseClient = null;
+    const audio = document.getElementById('audio-engine');
 
     try { supabaseClient = supabase.createClient(S_URL, S_KEY); } catch(e) {}
 
     async function init() {
-        const mFiles = await fetchGitHub('music');
+        const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/music`);
+        const files = r.ok ? await r.json() : [];
         
-        media.music = mFiles.filter(f => f.name.endsWith('.mp3')).map(f => {
-            const rawName = f.name.replace('.mp3', '');
-            let safeTitle = rawName;
-            try { safeTitle = decodeURIComponent(rawName); } catch(e) { safeTitle = rawName; }
-
-            // Попытка найти обложку в той же папке GitHub
-            const baseName = rawName.split('.')[0]; 
-            const hasCover = mFiles.find(img => img.name.startsWith(baseName) && /\.(jpg|png|webp)$/i.test(img.name));
-
+        tracks = files.filter(f => f.name.endsWith('.mp3')).map(f => {
+            const n = f.name.replace('.mp3', '');
+            // План Б: ищем картинку с тем же именем в списке файлов
+            const coverFile = files.find(img => img.name.startsWith(n) && /\.(jpg|png|webp)$/i.test(img.name));
             return { 
-                id: rawName, 
-                title: safeTitle, 
+                id: n, 
+                title: decodeURIComponent(n), 
                 url: f.download_url, 
-                img: hasCover ? hasCover.download_url : DEF_IMG, 
-                likes: 0, duration: '0:00' 
+                img: coverFile ? coverFile.download_url : DEF_IMG, 
+                artist: '', duration: '0:00' 
             };
         });
 
-        await syncDB();
+        await syncFromDB();
         render();
     }
 
-    async function fetchGitHub(path) {
-        const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`);
-        return r.ok ? await r.json() : [];
-    }
-
-    async function syncDB() {
+    async function syncFromDB() {
         if (!supabaseClient) return;
         const { data } = await supabaseClient.from('likes').select('*');
         if (data) data.forEach(r => {
-            const t = media.music.find(x => x.id === r.song_id);
+            const t = tracks.find(x => x.id === r.song_id);
             if (t) {
-                t.likes = r.count || 0;
                 t.duration = r.duration || '0:00';
+                t.artist = r.artist || '';
+                // Приоритет базе данных, если там есть base64 обложка
                 if (r.cover_data && r.cover_data.startsWith('data:')) t.img = r.cover_data;
             }
         });
     }
 
     function render() {
+        const query = document.getElementById('search-input').value.toLowerCase();
         const container = document.getElementById('main-content');
         container.innerHTML = '';
-        media.music.forEach(item => {
+
+        tracks.filter(t => t.title.toLowerCase().includes(query)).forEach(t => {
             const el = document.createElement('div');
-            el.className = `media-item ${curId === item.id ? 'active' : ''}`;
-            el.onclick = () => play(item);
+            el.className = `media-item ${curId === t.id ? 'active' : ''}`;
+            el.onclick = () => play(t);
             el.innerHTML = `
-                <img src="${item.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
+                <img src="${t.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
                 <div class="media-info">
-                    <div class="media-name">${item.title}</div>
-                    <div class="media-meta">${item.duration} • ${item.likes} ❤️</div>
-                </div>
-            `;
+                    <div class="media-name">${t.title}</div>
+                    <div class="media-meta">${t.artist ? t.artist + ' • ' : ''}${t.duration}</div>
+                </div>`;
             container.appendChild(el);
         });
     }
 
     function play(t) {
-        if (curId !== t.id) {
+        if(curId !== t.id) {
             curId = t.id; audio.src = t.url; audio.play();
             document.getElementById('now-playing').innerText = t.title;
             document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
             updateBtn(true);
-            tryScanTags(t); // Пробуем обновить обложку из тегов
-        } else {
-            audio.paused ? audio.play() : audio.pause();
-            updateBtn(!audio.paused);
-        }
+            scanTags(t);
+        } else toggle();
         render();
     }
 
-    // Улучшенное чтение тегов через прокси
-    function tryScanTags(t) {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(t.url)}`;
-        jsmediatags.read(proxyUrl, {
+    function scanTags(t) {
+        // Используем прокси для обхода CORS, пока ты на GitHub Pages
+        const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(t.url)}`;
+        jsmediatags.read(proxy, {
             onSuccess: (tag) => {
-                const p = tag.tags.picture;
-                if (p) {
-                    let base64 = ""; for (let i = 0; i < p.data.length; i++) base64 += String.fromCharCode(p.data[i]);
-                    const cover = `data:${p.format};base64,${window.btoa(base64)}`;
-                    t.img = cover;
-                    document.getElementById('bg-layer').style.backgroundImage = `url(${cover})`;
-                    // Сохраняем обложку в Supabase, чтобы в следующий раз не грузить прокси
-                    supabaseClient.from('likes').upsert({ song_id: t.id, cover_data: cover }, { onConflict: 'song_id' }).then(() => render());
+                const tags = tag.tags;
+                let changed = false;
+                if (tags.artist && !t.artist) { t.artist = tags.artist; changed = true; }
+                if (tags.picture && t.img === DEF_IMG) {
+                    const { data, format } = tags.picture;
+                    let base64 = ""; for (let i = 0; i < data.length; i++) base64 += String.fromCharCode(data[i]);
+                    t.img = `data:${format};base64,${window.btoa(base64)}`; 
+                    changed = true;
                 }
-            },
-            onError: (e) => console.log("Tag read skipped (CORS/Proxy error)")
+                if (changed && supabaseClient) {
+                    supabaseClient.from('likes').upsert({ 
+                        song_id: t.id, artist: t.artist, cover_data: t.img, duration: t.duration 
+                    }, { onConflict: 'song_id' }).then(() => render());
+                }
+            }
         });
     }
 
+    function toggle() { audio.paused ? audio.play() : audio.pause(); updateBtn(!audio.paused); }
     function updateBtn(p) { document.getElementById('p-icon').innerHTML = p ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
     function seekByBar(e) { audio.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * audio.duration; }
     
-    audio.ontimeupdate = () => { document.getElementById('progress-fill').style.width = (audio.currentTime / audio.duration * 100 || 0) + '%'; };
-    
+    audio.ontimeupdate = () => {
+        document.getElementById('progress-fill').style.width = (audio.currentTime / audio.duration * 100 || 0) + '%';
+    };
+
     function nextTrack() {
-        let idx = media.music.findIndex(x => x.id === curId);
-        if (idx < media.music.length - 1) play(media.music[idx+1]);
+        let i = tracks.findIndex(x => x.id === curId);
+        if (i < tracks.length - 1) play(tracks[i+1]);
     }
     function prevTrack() {
-        let idx = media.music.findIndex(x => x.id === curId);
-        if (idx > 0) play(media.music[idx-1]);
+        let i = tracks.findIndex(x => x.id === curId);
+        if (i > 0) play(tracks[i-1]);
     }
 
     init();
