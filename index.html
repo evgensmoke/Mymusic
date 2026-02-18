@@ -12,40 +12,41 @@
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { background: #020617; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; min-height: 100vh; padding-bottom: 240px; overflow-x: hidden; }
         #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.15); z-index: -1; transition: 1.5s; }
-        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; letter-spacing: 2px; font-size: 1.5rem; margin: 15px 0; }
-        .search-box { width: 95%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; }
+        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; letter-spacing: 2px; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
+        .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; }
         
         .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 500px; margin: 0 auto 15px; }
-        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 10px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.65rem; display: flex; flex-direction: column; align-items: center; }
+        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
-        .cat-card svg { width: 20px; height: 20px; fill: currentColor; margin-bottom: 5px; }
+        .cat-card svg { width: 20px; height: 20px; fill: currentColor; }
 
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; }
+        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; position: relative; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
-        .media-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
+        .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
         .media-info { flex-grow: 1; overflow: hidden; }
-        .media-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 3px; }
+        .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 60px; }
+        .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
+        .item-actions { position: absolute; right: 10px; display: flex; gap: 10px; font-size: 1.2rem; }
 
         .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
         #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .progress-area { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin: 10px 0 5px; cursor: pointer; }
-        #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 2px; box-shadow: 0 0 10px var(--neon); }
-        .time-info { display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-bottom: 15px; }
+        .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; }
+        #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 10px var(--neon); }
+        .time-info { display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-bottom: 12px; }
         
         .controls-row { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
-        .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; padding: 8px; display: flex; align-items: center; }
-        .ctrl-btn svg { width: 22px; height: 22px; }
+        .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; padding: 5px; display: flex; align-items: center; }
+        .ctrl-btn svg { width: 24px; height: 24px; }
         .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; border: none; box-shadow: 0 0 15px rgba(0,242,255,0.4); }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
-        .nav-item { color: #64748b; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .nav-item { color: #64748b; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
         .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
 
         #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; padding: 20px; align-items: center; justify-content: center; }
-        #modal-content { background: #1e293b; padding: 25px; border-radius: 20px; width: 100%; max-height: 80vh; overflow-y: auto; white-space: pre-wrap; color: #e2e8f0; text-align: left; line-height: 1.6; }
+        #modal-content { background: #1e293b; padding: 25px; border-radius: 20px; width: 100%; max-height: 80vh; overflow-y: auto; white-space: pre-wrap; color: #e2e8f0; text-align: center; }
     </style>
 </head>
 <body>
@@ -98,7 +99,6 @@
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
     
-    // Тот самый старый токен, береги его
     const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT"; 
     const p2 = "T10FM6e"; 
     const G_TOKEN = p1 + p2;
@@ -109,118 +109,118 @@
 
     try { sb = supabase.createClient(S_URL, S_KEY); } catch(e) {}
 
-    async function fetchGH(path) {
-        try {
-            const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`, {
-                headers: { 'Authorization': `token ${G_TOKEN}` }
-            });
-            const d = await r.json();
-            return Array.isArray(d) ? d : [];
-        } catch(e) { return []; }
-    }
-
     async function init() {
         const [mF, pF, iF, tF] = await Promise.all([fetchGH('music'), fetchGH('podcasts'), fetchGH('photos'), fetchGH('texts')]);
-        const mapper = (f) => ({ id: f.name.replace('.mp3', ''), title: decodeURIComponent(f.name.replace('.mp3', '')), artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, duration: '0:00', lyrics: '' });
+        const mapper = (f) => ({ id: f.name.replace('.mp3', ''), title: decodeURIComponent(f.name.replace('.mp3', '')), artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, duration: '0:00', lyrics: '', likes: 0 });
         
-        media.music = mF.filter(f => f.name.endsWith('.mp3')).map(mapper);
-        media.podcasts = pF.filter(f => f.name.endsWith('.mp3')).map(mapper);
-        media.photos = iF.filter(f => /\.(jpg|png|webp)$/i.test(f.name)).map(f => ({ url: f.download_url }));
-        media.texts = tF.filter(f => f.name.endsWith('.txt')).map(f => ({ title: f.name.replace('.txt',''), url: f.download_url }));
+        media.music = Array.isArray(mF) ? mF.filter(f => f.name.endsWith('.mp3')).map(mapper) : [];
+        media.podcasts = Array.isArray(pF) ? pF.filter(f => f.name.endsWith('.mp3')).map(mapper) : [];
+        media.photos = Array.isArray(iF) ? iF.filter(f => /\.(jpg|png|webp)$/i.test(f.name)).map(f => ({ url: f.download_url })) : [];
+        media.texts = Array.isArray(tF) ? tF.filter(f => f.name.endsWith('.txt')).map(f => ({ title: f.name.replace('.txt',''), url: f.download_url })) : [];
 
         if (sb) {
             const { data } = await sb.from('likes').select('*');
             if (data) data.forEach(r => {
                 const t = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
-                if (t) { 
-                    t.likes = r.count || 0; t.artist = r.artist || 'Неизвестен'; 
-                    t.duration = r.duration || '0:00'; if(r.cover_data) t.img = r.cover_data; 
-                    t.lyrics = r.lyrics || ''; 
-                }
+                if (t) { t.likes = r.count || 0; t.artist = r.artist || 'Неизвестен'; t.duration = r.duration || '0:00'; if(r.cover_data) t.img = r.cover_data; t.lyrics = r.lyrics || ''; }
             });
         }
         render();
+    }
+
+    async function fetchGH(path) {
+        try {
+            const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`, {
+                headers: { 'Authorization': `token ${G_TOKEN}` }
+            });
+            return await r.json();
+        } catch(e) { return []; }
     }
 
     function render() {
         const container = document.getElementById('main-content');
         document.getElementById('catalog-ui').style.display = (currentTab === 'catalog') ? 'block' : 'none';
         container.innerHTML = '';
-        let list = (currentTab==='home') ? media.music.filter(m=>m.likes>0) : (currentTab==='my') ? [...media.music, ...media.podcasts].filter(t=>localStorage.getItem('fav_'+t.id)) : media[currentCategory];
         
-        if (searchQuery) list = list.filter(i => i.title.toLowerCase().includes(searchQuery.toLowerCase()));
+        let list = (currentTab === 'home') ? media.music : (currentTab === 'my') ? [...media.music, ...media.podcasts].filter(t => localStorage.getItem('fav_' + t.id)) : media[currentCategory];
+        if (searchQuery) list = list.filter(i => (i.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
 
         list.forEach(t => {
             const el = document.createElement('div');
             el.className = `media-item ${curId === t.id ? 'active' : ''}`;
             if (currentCategory === 'photos' && currentTab === 'catalog') {
-                el.innerHTML = `<img src="${t.url}" style="width:100%; border-radius:10px;">`;
+                el.innerHTML = `<img src="${t.url}" style="width:100%; border-radius:12px;">`;
             } else if (currentCategory === 'texts' && currentTab === 'catalog') {
                 el.onclick = () => showText(t.url);
                 el.innerHTML = `<div class="media-info"><div class="media-name">📄 ${t.title}</div></div>`;
             } else {
                 el.onclick = () => play(t);
                 el.innerHTML = `<img src="${t.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
-                    <div class="media-info"><div class="media-name">${t.title}</div><div class="media-meta">${t.artist} • ${t.duration}</div></div>`;
+                    <div class="media-info"><div class="media-name">${t.title}</div><div class="media-meta">${t.artist} • ${t.duration}</div></div>
+                    <div class="item-actions">
+                        <span onclick="event.stopPropagation(); toggleLike('${t.id}')">${localStorage.getItem('lk_'+t.id)?'❤️':'🤍'}</span>
+                        <span onclick="event.stopPropagation(); toggleFav('${t.id}')">${localStorage.getItem('fav_'+t.id)?'⭐':'➕'}</span>
+                    </div>`;
             }
             container.appendChild(el);
         });
     }
 
     async function play(t) {
-        if(curId === t.id) return toggle();
+        if (curId === t.id) return toggle();
         curId = t.id; audio.src = t.url; audio.play();
         document.getElementById('now-playing').innerText = t.title;
         document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
         updateBtn(true);
-        scanTags(t);
+        scanFile(t);
         render();
     }
 
-    function scanTags(t) {
-        jsmediatags.read(t.url, {
-            onSuccess: (tag) => {
-                const tags = tag.tags; let up = { duration: formatTime(audio.duration || 0) };
-                t.duration = up.duration;
-                if (tags.artist) { t.artist = tags.artist; up.artist = t.artist; }
-                if (tags.lyrics && tags.lyrics.lyrics) { t.lyrics = tags.lyrics.lyrics; up.lyrics = t.lyrics; }
-                if (tags.picture) {
-                    const { data, format } = tags.picture;
-                    let b = ""; for (let i = 0; i < data.length; i++) b += String.fromCharCode(data[i]);
-                    t.img = `data:${format};base64,${window.btoa(b)}`; up.cover_data = t.img;
-                    document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
+    function scanFile(t) {
+        // Мы скачиваем файл через Blob с токеном, чтобы jsmediatags мог его прочитать без CORS-ошибок
+        fetch(t.url, { headers: { 'Authorization': `token ${G_TOKEN}` } })
+        .then(r => r.blob())
+        .then(blob => {
+            jsmediatags.read(blob, {
+                onSuccess: (tag) => {
+                    const tags = tag.tags;
+                    let up = { song_id: t.id, count: t.likes };
+                    if (tags.artist) { t.artist = tags.artist; up.artist = t.artist; }
+                    if (audio.duration) { t.duration = formatTime(audio.duration); up.duration = t.duration; }
+                    if (tags.lyrics && tags.lyrics.lyrics) { t.lyrics = tags.lyrics.lyrics; up.lyrics = t.lyrics; }
+                    if (tags.picture) {
+                        const { data, format } = tags.picture;
+                        let b = ""; for (let i = 0; i < data.length; i++) b += String.fromCharCode(data[i]);
+                        t.img = `data:${format};base64,${window.btoa(b)}`; up.cover_data = t.img;
+                        document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
+                    }
+                    if (sb) sb.from('likes').upsert(up, { onConflict: 'song_id' }).then(() => render());
                 }
-                if (sb) sb.from('likes').upsert({ song_id: t.id, ...up }, { onConflict: 'song_id' }).then(() => render());
-            }
+            });
         });
     }
 
-    function share() {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if(navigator.share) navigator.share({ title: t?.title || 'Евген Музыка', url: window.location.href });
+    async function toggleLike(id) {
+        const t = [...media.music, ...media.podcasts].find(x => x.id === id);
+        localStorage.getItem('lk_'+id) ? (t.likes--, localStorage.removeItem('lk_'+id)) : (t.likes++, localStorage.setItem('lk_'+id, '1'));
+        render();
+        if(sb) await sb.from('likes').upsert({ song_id: id, count: t.likes }, { onConflict: 'song_id' });
     }
 
-    async function download() {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if(!t) return;
-        const resp = await fetch(t.url);
-        const blob = await resp.blob();
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = t.title + ".mp3"; a.click();
-    }
+    function toggleFav(id) { localStorage.getItem('fav_'+id) ? localStorage.removeItem('fav_'+id) : localStorage.setItem('fav_'+id, '1'); render(); }
 
     async function showText(url) {
         const r = await fetch(url);
         const buf = await r.arrayBuffer();
         let txt = new TextDecoder("utf-8").decode(buf);
-        // Проверка на некорректные символы (UTF-8 мусор)
         if (txt.includes('')) txt = new TextDecoder("windows-1251").decode(buf);
         document.getElementById('modal-content').innerText = txt;
-        document.getElementById('modal').style.display='flex';
+        document.getElementById('modal').style.display = 'flex';
     }
 
     function toggle() { audio.paused ? audio.play() : audio.pause(); updateBtn(!audio.paused); }
     function updateBtn(p) { document.getElementById('p-icon').innerHTML = p ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
-    function formatTime(s) { if(!s || isNaN(s)) return "0:00"; let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
+    function formatTime(s) { let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
     
     audio.ontimeupdate = () => {
         document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100||0)+'%';
@@ -230,23 +230,28 @@
     audio.onended = () => nextTrack();
 
     function seekByBar(e) { audio.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * audio.duration; }
-    function setTab(t) { currentTab = t; render(); document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.id==='tab-'+t)); }
-    function setCategory(c) { currentCategory = c; render(); document.querySelectorAll('.cat-card').forEach(n=>n.classList.toggle('active', n.id==='btn-'+c)); }
+    function setTab(t) { currentTab = t; render(); document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.id==='tab-'+t)); }
+    function setCategory(c) { currentCategory = c; render(); document.querySelectorAll('.cat-card').forEach(n => n.classList.toggle('active', n.id==='btn-'+c)); }
     function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
     
     function nextTrack() { 
-        let list = (currentCategory==='podcasts')?media.podcasts:media.music; 
-        if (currentTab === 'home') list = media.music.filter(m=>m.likes>0);
-        let i=list.findIndex(x=>x.id===curId); if(i<list.length-1) play(list[i+1]); 
+        let list = (currentTab === 'home') ? media.music : (currentCategory==='podcasts'?media.podcasts:media.music);
+        let i = list.findIndex(x => x.id === curId); if (i < list.length - 1) play(list[i+1]); 
     }
     function prevTrack() { 
-        let list = (currentCategory==='podcasts')?media.podcasts:media.music; 
-        if (currentTab === 'home') list = media.music.filter(m=>m.likes>0);
-        let i=list.findIndex(x=>x.id===curId); if(i>0) play(list[i-1]); 
+        let list = (currentTab === 'home') ? media.music : (currentCategory==='podcasts'?media.podcasts:media.music);
+        let i = list.findIndex(x => x.id === curId); if (i > 0) play(list[i-1]); 
     }
-    function openLyrics() {
+    function share() { const t = [...media.music, ...media.podcasts].find(x => x.id === curId); if(navigator.share) navigator.share({ title: t?.title, url: window.location.href }); }
+    async function download() {
         const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if(t) { document.getElementById('modal-content').innerText = t.lyrics || "Текст не найден."; document.getElementById('modal').style.display='flex'; }
+        if(!t) return;
+        const r = await fetch(t.url); const b = await r.blob();
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = t.title + ".mp3"; a.click();
+    }
+    function openLyrics() { 
+        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
+        if(t) { document.getElementById('modal-content').innerText = t.lyrics || "Текст не найден."; document.getElementById('modal').style.display = 'flex'; }
     }
 
     init();
