@@ -1,291 +1,119 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EVGEN MUSIC PRO - ULTIMATE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
-    <style>
-        :root { --neon: #00f2ff; --glass: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.15); }
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { background: #020617; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; min-height: 100vh; padding-bottom: 240px; overflow-x: hidden; }
-        #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.15); z-index: -1; transition: 1.5s; }
-        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; letter-spacing: 2px; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
-        .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; }
-        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 500px; margin: 0 auto 15px; }
-        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
-        .cat-card svg { width: 20px; height: 20px; fill: currentColor; }
-        .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; transition: 0.2s; }
-        .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
-        .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
-        .media-info { flex-grow: 1; overflow: hidden; }
-        .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
-        .item-btns { display: flex; gap: 12px; font-size: 1.1rem; align-items: center; }
-        .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
-        #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 5px; }
-        .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; position: relative; }
-        #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 10px var(--neon); }
-        .time-info { display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-bottom: 12px; }
-        .controls-row { display: flex; justify-content: space-between; align-items: center; }
-        .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; display: flex; align-items: center; padding: 5px; }
-        .ctrl-btn svg { width: 24px; height: 24px; }
-        .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; box-shadow: 0 0 15px rgba(0,242,255,0.3); }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
-        .nav-item { color: #64748b; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
-        .nav-item.active { color: var(--neon); }
-        .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
-        #text-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; padding: 25px; align-items: center; justify-content: center; }
-        #text-content { background: #1e293b; padding: 30px; border-radius: 20px; width: 100%; max-height: 75vh; overflow-y: auto; white-space: pre-wrap; text-align: center; line-height: 1.6; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>EVGEN MUSIC ULTIMATE</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+<style>
+:root{--neon:#00f2ff;--glass:rgba(255,255,255,0.08);--border:rgba(255,255,255,0.15)}
+*{box-sizing:border-box;outline:0;-webkit-tap-highlight-color:transparent}
+body{background:#020617;color:#fff;font-family:Inter,sans-serif;margin:0;padding:10px;padding-bottom:240px;overflow-x:hidden}
+#bg-layer{position:fixed;top:0;left:0;width:100%;height:100%;background-size:cover;background-position:center;filter:blur(60px) brightness(.15);z-index:-1;transition:1.5s}
+.main-title{font-family:Orbitron,sans-serif;color:var(--neon);text-align:center;letter-spacing:2px;font-size:1.5rem;margin:15px 0;text-shadow:0 0 10px var(--neon)}
+.search-box{width:100%;max-width:500px;margin:0 auto 15px;background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:12px 20px;color:#fff;display:block;font-size:16px}
+.category-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:500px;margin:0 auto 15px}
+.cat-card{background:var(--glass);border:1px solid var(--border);border-radius:10px;padding:12px 5px;text-align:center;color:#94a3b8;cursor:pointer;font-size:.7rem;display:flex;flex-direction:column;align-items:center;gap:5px}
+.cat-card.active{border-color:var(--neon);color:var(--neon);background:rgba(0,242,255,.1)}
+.cat-card svg{width:20px;height:20px;fill:currentColor}
+.content-grid{max-width:500px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.media-item{display:flex;align-items:center;background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:10px;cursor:pointer}
+.media-item.active{border-color:var(--neon);background:rgba(0,242,255,.1)}
+.media-img{width:52px;height:52px;border-radius:8px;object-fit:cover;margin-right:12px;background:#000;flex-shrink:0}
+.media-info{flex-grow:1;overflow:hidden}
+.media-name{font-size:.9rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.media-meta{font-size:.7rem;color:#94a3b8;margin-top:4px}
+.item-btns{display:flex;gap:12px;font-size:1.1rem;align-items:center}
+.player-panel{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);width:95%;max-width:500px;background:rgba(13,18,30,.98);border:1px solid var(--border);border-radius:24px;padding:15px;z-index:1000;backdrop-filter:blur(20px)}
+#now-playing{color:var(--neon);text-align:center;font-size:.85rem;font-weight:700;margin-bottom:5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:5px}
+.progress-area{height:6px;background:rgba(255,255,255,.1);border-radius:3px;margin:10px 0 5px;cursor:pointer;position:relative}
+#progress-fill{height:100%;background:var(--neon);width:0%;border-radius:3px;box-shadow:0 0 10px var(--neon)}
+.time-info{display:flex;justify-content:space-between;font-size:.65rem;color:#64748b;margin-bottom:12px}
+.controls-row{display:flex;justify-content:space-between;align-items:center}
+.ctrl-btn{background:0 0;border:0;fill:#94a3b8;cursor:pointer;display:flex;align-items:center;padding:5px}
+.ctrl-btn svg{width:24px;height:24px}
+.play-btn{width:55px;height:55px;background:var(--neon);border-radius:50%;display:flex;justify-content:center;align-items:center;fill:#000;box-shadow:0 0 15px rgba(0,242,255,.3)}
+.bottom-nav{position:fixed;bottom:0;left:0;width:100%;height:75px;background:#0a0f1c;border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:center;z-index:1001}
+.nav-item{color:#64748b;font-size:.75rem;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+.nav-item.active{color:var(--neon)}
+.nav-item svg{width:22px;height:22px;fill:currentColor}
+#text-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.96);z-index:2000;display:none;padding:25px;align-items:center;justify-content:center}
+#text-content{background:#1e293b;padding:30px;border-radius:20px;width:100%;max-height:75vh;overflow-y:auto;white-space:pre-wrap;text-align:center;line-height:1.6}
+</style>
 </head>
 <body>
-
 <div id="bg-layer"></div>
 <header>
-    <div class="main-title">EVGEN MUSIC</div>
-    <input type="text" class="search-box" placeholder="Поиск..." id="search-input" oninput="handleSearch()">
+<div class="main-title">EVGEN MUSIC</div>
+<input type="text" class="search-box" placeholder="Поиск..." id="search-input" oninput="handleSearch()">
 </header>
-
-<div id="catalog-ui" style="display:none;">
-    <div class="category-grid">
-        <div class="cat-card active" id="btn-music" onclick="setCategory('music')">
-             <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>Музыка
-        </div>
-        <div class="cat-card" id="btn-podcasts" onclick="setCategory('podcasts')">
-            <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>Подк.
-        </div>
-        <div class="cat-card" id="btn-photos" onclick="setCategory('photos')">
-             <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>Фото
-        </div>
-        <div class="cat-card" id="btn-texts" onclick="setCategory('texts')">
-             <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>Тексты
-        </div>
-    </div>
+<div id="catalog-ui" style="display:none">
+<div class="category-grid">
+<div class="cat-card active" id="btn-music" onclick="setCategory('music')"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>Музыка</div>
+<div class="cat-card" id="btn-podcasts" onclick="setCategory('podcasts')"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>Подк.</div>
+<div class="cat-card" id="btn-photos" onclick="setCategory('photos')"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>Фото</div>
+<div class="cat-card" id="btn-texts" onclick="setCategory('texts')"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>Тексты</div>
 </div>
-
+</div>
 <div id="main-content" class="content-grid"></div>
-
 <div class="player-panel">
-    <div id="now-playing" onclick="openLyrics()">ВЫБЕРИТЕ ТРЕК</div>
-    <div class="progress-area" id="p-bg" onclick="seekByBar(event)"><div id="progress-fill"></div></div>
-    <div class="time-info"><span id="cur-time">0:00</span><span id="dur-time">0:00</span></div>
-    
-    <div class="controls-row">
-        <button class="ctrl-btn" onclick="shareCurrent()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
-        <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
-        <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-        
-        <div class="play-btn" onclick="toggle()">
-            <svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg>
-        </div>
-        
-        <button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-        <button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
-        <button class="ctrl-btn" onclick="downloadTrack()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
-    </div>
+<div id="now-playing" onclick="openLyrics()">ВЫБЕРИТЕ ТРЕК</div>
+<div class="progress-area" onclick="seekByBar(event)"><div id="progress-fill"></div></div>
+<div class="time-info"><span id="cur-time">0:00</span><span id="dur-time">0:00</span></div>
+<div class="controls-row">
+<button class="ctrl-btn" onclick="shareCurrent()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
+<button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
+<button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+<div class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg></div>
+<button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+<button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
+<button class="ctrl-btn" onclick="downloadTrack()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
 </div>
-
+</div>
 <nav class="bottom-nav">
-    <div class="nav-item active" id="tab-home" onclick="setTab('home')">
-        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Главная</span>
-    </div>
-    <div class="nav-item" id="tab-catalog" onclick="setTab('catalog')">
-        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg><span>Каталог</span>
-    </div>
-    <div class="nav-item" id="tab-my" onclick="setTab('my')">
-        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>Моё</span>
-    </div>
+<div class="nav-item active" id="tab-home" onclick="setTab('home')"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Главная</span></div>
+<div class="nav-item" id="tab-catalog" onclick="setTab('catalog')"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg><span>Каталог</span></div>
+<div class="nav-item" id="tab-my" onclick="setTab('my')"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>Моё</span></div>
 </nav>
-
 <div id="text-modal" onclick="this.style.display='none'"><div id="text-content" onclick="event.stopPropagation()"></div></div>
 <audio id="audio-engine" crossorigin="anonymous"></audio>
-
 <script>
-    const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
-    const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
-    
-    let media = { music: [], podcasts: [], photos: [], texts: [] };
-    let currentTab = 'home', currentCategory = 'music', curId = null, searchQuery = '', sb = null;
-    const audio = document.getElementById('audio-engine');
-
-    try { sb = supabase.createClient(S_URL, S_KEY); } catch(e) {}
-
-    async function init() {
-        const [mF, pF, iF, tF] = await Promise.all([
-            fetchGitHub('music'), fetchGitHub('podcasts'), fetchGitHub('photos'), fetchGitHub('texts')
-        ]);
-        
-        const mapMP3 = (files) => files.filter(f => f && f.name.endsWith('.mp3')).map(f => ({
-            id: f.name.replace('.mp3', ''),
-            title: decodeSafe(f.name.replace('.mp3', '')),
-            artist: '', url: f.download_url, img: DEF_IMG, likes: 0, duration: '0:00', lyrics: ''
-        }));
-
-        media.music = mapMP3(mF);
-        media.podcasts = mapMP3(pF);
-        media.photos = iF.filter(f => /\.(jpg|png|webp)$/i.test(f.name)).map(f => ({ url: f.download_url }));
-        media.texts = tF.filter(f => f.name.endsWith('.txt')).map(f => ({ title: f.name.replace('.txt',''), url: f.download_url }));
-
-        await syncDB();
-        render();
-    }
-
-    function decodeSafe(s) { try { return decodeURIComponent(s); } catch(e) { return s; } }
-
-    async function fetchGitHub(path) {
-        try { const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`); return r.ok ? await r.json() : []; } catch(e) { return []; }
-    }
-
-    async function syncDB() {
-        if (!sb) return;
-        const { data } = await sb.from('likes').select('*');
-        if (data) data.forEach(r => {
-            const t = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
-            if (t) {
-                t.likes = r.count || 0;
-                t.duration = r.duration || '0:00';
-                t.artist = r.artist || '';
-                if (r.cover_data && r.cover_data.startsWith('data:')) t.img = r.cover_data;
-                t.lyrics = r.lyrics || '';
-            }
-        });
-    }
-
-    function render() {
-        const container = document.getElementById('main-content');
-        document.getElementById('catalog-ui').style.display = (currentTab === 'catalog') ? 'block' : 'none';
-        container.innerHTML = '';
-
-        let list = [];
-        if (currentTab === 'home') list = media.music.filter(t => t.likes > 0);
-        else if (currentTab === 'my') list = media.music.filter(t => localStorage.getItem('fav_'+t.id));
-        else list = (media[currentCategory] || []);
-
-        if (searchQuery) list = list.filter(i => (i.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
-
-        list.forEach(item => {
-            const el = document.createElement('div');
-            el.className = `media-item ${curId === item.id ? 'active' : ''}`;
-            if (currentCategory === 'photos' && currentTab === 'catalog') {
-                el.innerHTML = `<img src="${item.url}" style="width:100%; border-radius:12px;">`;
-            } else if (currentCategory === 'texts' && currentTab === 'catalog') {
-                el.onclick = () => showText(item.url);
-                el.innerHTML = `<div class="media-info"><div class="media-name">📄 ${item.title}</div></div>`;
-            } else {
-                el.onclick = () => play(item);
-                el.innerHTML = `
-                    <img src="${item.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
-                    <div class="media-info">
-                        <div class="media-name">${item.title}</div>
-                        <div class="media-meta">${item.artist ? item.artist + ' • ' : ''}${item.duration}</div>
-                    </div>
-                    <div class="item-btns">
-                        <span onclick="event.stopPropagation(); toggleLike('${item.id}')">${item.likes > 0 ? '❤️' : '🤍'}</span>
-                        <span onclick="event.stopPropagation(); toggleFav('${item.id}')">${localStorage.getItem('fav_'+item.id)?'⭐':'➕'}</span>
-                    </div>`;
-            }
-            container.appendChild(el);
-        });
-    }
-
-    async function play(t) {
-        if (curId === t.id) { toggle(); return; }
-        curId = t.id;
-        document.getElementById('p-icon').innerHTML = '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="4" style="opacity:0.3"/><path d="M12 2a10 10 0 0 1 10 10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path>';
-        
-        try {
-            const res = await fetch(t.url);
-            const blob = await res.blob();
-            audio.src = URL.createObjectURL(blob);
-            audio.play();
-            
-            document.getElementById('now-playing').innerText = (t.artist ? t.artist + ' - ' : '') + t.title;
-            document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
-            updateBtn(true);
-
-            // Если в базе нет картинки или артиста — читаем Blob
-            if (t.img === DEF_IMG || !t.artist) {
-                jsmediatags.read(blob, {
-                    onSuccess: (tag) => {
-                        let upd = {}, changed = false;
-                        const tags = tag.tags;
-                        const art = tags.artist || tags.albumArtist || "";
-                        
-                        if (art && t.artist !== art) { t.artist = art; upd.artist = art; changed = true; }
-                        
-                        if (tags.picture && (t.img === DEF_IMG)) {
-                            const { data, format } = tags.picture;
-                            let b = ""; for (let i=0; i<data.length; i++) b += String.fromCharCode(data[i]);
-                            const b64 = `data:${format};base64,${window.btoa(b)}`;
-                            if (b64.length < 1000000) { t.img = b64; upd.cover_data = b64; changed = true; }
-                        }
-                        
-                        if (tags.lyrics?.lyrics && !t.lyrics) { t.lyrics = tags.lyrics.lyrics; upd.lyrics = t.lyrics; changed = true; }
-                        
-                        if (changed) {
-                            sb.from('likes').upsert({ song_id: t.id, ...upd }, { onConflict: 'song_id' }).then(() => render());
-                        }
-                    }
-                });
-            }
-        } catch(e) { console.error(e); }
-        render();
-    }
-
-    async function showText(url) {
-        const res = await fetch(url);
-        const buffer = await res.arrayBuffer();
-        // Пробуем UTF-8, если есть странные символы — переключаем на Windows-1251
-        let text = new TextDecoder("utf-8").decode(buffer);
-        if (text.includes('')) text = new TextDecoder("windows-1251").decode(buffer);
-        
-        document.getElementById('text-content').innerText = text;
-        document.getElementById('text-modal').style.display = 'flex';
-    }
-
-    function shareCurrent() {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if (navigator.share && t) {
-            navigator.share({ title: t.title, text: 'Слушай со мной: ' + t.title, url: window.location.href });
-        } else { alert("Ссылка скопирована (шутка, браузер не тянет)"); }
-    }
-
-    // Служебные функции
-    async function toggleLike(id) {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === id);
-        t.likes = t.likes > 0 ? 0 : 1;
-        render();
-        await sb.from('likes').upsert({ song_id: id, count: t.likes }, { onConflict: 'song_id' });
-    }
-    function toggle() { audio.paused ? audio.play() : audio.pause(); updateBtn(!audio.paused); }
-    function updateBtn(p) { document.getElementById('p-icon').innerHTML = p ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
-    function formatTime(s) { let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
-    function seekByBar(e) { audio.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * audio.duration; }
-    audio.ontimeupdate = () => {
-        document.getElementById('progress-fill').style.width = (audio.currentTime / audio.duration * 100 || 0) + '%';
-        document.getElementById('cur-time').innerText = formatTime(audio.currentTime);
-        if(audio.duration) document.getElementById('dur-time').innerText = formatTime(audio.duration);
-    };
-    function openLyrics() { 
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if (t?.lyrics) { document.getElementById('text-content').innerText = t.lyrics; document.getElementById('text-modal').style.display = 'flex'; }
-        else if (curId) { alert("В этом файле текста нет, сорян"); }
-    }
-    function setTab(t) { currentTab = t; render(); document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.id==='tab-'+t)); }
-    function setCategory(c) { currentCategory = c; render(); document.querySelectorAll('.cat-card').forEach(n => n.classList.toggle('active', n.id==='btn-'+c)); }
-    function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
-    function nextTrack() { let l=getActiveList(), i=l.findIndex(x=>x.id===curId); if(i<l.length-1) play(l[i+1]); }
-    function prevTrack() { let l=getActiveList(), i=l.findIndex(x=>x.id===curId); if(i>0) play(l[i-1]); }
-    function getActiveList() { return (currentTab === 'home') ? media.music.filter(t=>t.likes>0) : (currentTab === 'my') ? media.music.filter(t=>localStorage.getItem('fav_'+t.id)) : (media[currentCategory] || []); }
-    function toggleFav(id) { localStorage.getItem('fav_'+id) ? localStorage.removeItem('fav_'+id) : localStorage.setItem('fav_'+id, '1'); render(); }
-    function downloadTrack() { const t=getActiveList().find(x=>x.id===curId); if(t){ const a=document.createElement('a'); a.href=t.url; a.download=t.title+".mp3"; a.click(); } }
-
-    init();
+const S_URL="https://ojxyjiawdprejvmbsvvj.supabase.co",S_KEY="sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks",G_USER='evgensmoke',G_REPO='Mymusic',DEF_IMG=`https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
+let media={music:[],podcasts:[],photos:[],texts:[]},currentTab='home',currentCategory='music',curId=null,searchQuery='',sb=null;
+const audio=document.getElementById('audio-engine');
+try{sb=supabase.createClient(S_URL,S_KEY)}catch(e){}
+async function init(){
+const[m,p,i,t]=await Promise.all([fG('music'),fG('podcasts'),fG('photos'),fG('texts')]);
+const map=f=>f&&f.name.endsWith('.mp3')?({id:f.name.replace('.mp3',''),title:dS(f.name.replace('.mp3','')),artist:'',url:f.download_url,img:DEF_IMG,likes:0,duration:'0:00',lyrics:''}):null;
+media.music=m.map(map).filter(x=>x);media.podcasts=p.map(map).filter(x=>x);
+media.photos=i.filter(f=>/\.(jpg|png|webp)$/i.test(f.name)).map(f=>({url:f.download_url}));
+media.texts=t.filter(f=>f.name.endsWith('.txt')).map(f=>({title:f.name.replace('.txt',''),url:f.download_url}));
+render();sDB().then(()=>render())}
+function dS(s){try{return decodeURIComponent(s)}catch(e){return s}}
+async fG(path){try{const r=await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`);return r.ok?await r.json():[]}catch(e){return []}}
+async sDB(){if(!sb)return;try{const{data}=await sb.from('likes').select('*');if(data)data.forEach(r=>{const t=[...media.music,...media.podcasts].find(x=>x.id===r.song_id);if(t){t.likes=r.count||0;t.duration=r.duration||'0:00';t.artist=r.artist||'';if(r.cover_data?.startsWith('data:'))t.img=r.cover_data;t.lyrics=r.lyrics||''}})}catch(e){}}
+function render(){const c=document.getElementById('main-content');document.getElementById('catalog-ui').style.display=currentTab==='catalog'?'block':'none';c.innerHTML='';let l=[];if(currentTab==='home')l=media.music.filter(t=>t.likes>0);else if(currentTab==='my')l=media.music.filter(t=>localStorage.getItem('fav_'+t.id));else l=media[currentCategory]||[];if(searchQuery)l=l.filter(i=>(i.title||'').toLowerCase().includes(searchQuery.toLowerCase()));l.forEach(t=>{const e=document.createElement('div');e.className=`media-item ${curId===t.id?'active':''}`;if(currentCategory==='photos'&&currentTab==='catalog'){e.innerHTML=`<img src="${t.url}" style="width:100%;border-radius:12px">`}else if(currentCategory==='texts'&&currentTab==='catalog'){e.onclick=()=>sT(t.url);e.innerHTML=`<div class="media-info"><div class="media-name">📄 ${t.title}</div></div>`}else{e.onclick=()=>play(t);e.innerHTML=`<img src="${t.img}" class="media-img" onerror="this.src='${DEF_IMG}'"><div class="media-info"><div class="media-name">${t.title}</div><div class="media-meta">${t.artist?t.artist+' • ':''}${t.duration}</div></div><div class="item-btns"><span onclick="event.stopPropagation();tL('${t.id}')">${t.likes>0?'❤️':'🤍'}</span><span onclick="event.stopPropagation();tF('${t.id}')">${localStorage.getItem('fav_'+t.id)?'⭐':'➕'}</span></div>`}c.appendChild(e)})}
+async function play(t){if(curId===t.id){toggle();return}curId=t.id;document.getElementById('now-playing').innerText=(t.artist?t.artist+' - ':'')+t.title;document.getElementById('bg-layer').style.backgroundImage=`url(${t.img})`;try{const r=await fetch(t.url);const b=await r.blob();audio.src=URL.createObjectURL(b);audio.play();uB(1);jsmediatags.read(b,{onSuccess:tag=>{let u={},c=0;const g=tag.tags,a=g.artist||g.albumArtist||g.TPE1||"";if(a&&t.artist!==a){t.artist=a;u.artist=a;c=1}if(g.picture&&t.img===DEF_IMG){const{data,format}=g.picture;let s="";for(let i=0;i<data.length;i++)s+=String.fromCharCode(data[i]);const b64=`data:${format};base64,${window.btoa(s)}`;if(b64.length<1500000){t.img=b64;u.cover_data=b64;c=1}}if(g.lyrics?.lyrics&&!t.lyrics){t.lyrics=g.lyrics.lyrics;u.lyrics=t.lyrics;c=1}if(c&&sb)sb.from('likes').upsert({song_id:t.id,...u},{onConflict:'song_id'}).then(()=>render())}})}catch(e){}}
+async sT(u){try{const r=await fetch(u),b=await r.arrayBuffer();let t=new TextDecoder("utf-8").decode(b);if(t.includes(''))t=new TextDecoder("windows-1251").decode(b);document.getElementById('text-content').innerText=t;document.getElementById('text-modal').style.display='flex'}catch(e){}}
+function shareCurrent(){const t=[...media.music,...media.podcasts].find(x=>x.id===curId);if(navigator.share&&t)navigator.share({title:t.title,text:'Слушаю: '+t.title,url:location.href});else alert("Не поддерживается")}
+async tL(id){const t=[...media.music,...media.podcasts].find(x=>x.id===id);t.likes=t.likes?0:1;render();if(sb)await sb.from('likes').upsert({song_id:id,count:t.likes},{onConflict:'song_id'})}
+function toggle(){audio.paused?audio.play():audio.pause();uB(!audio.paused)}
+function uB(p){document.getElementById('p-icon').innerHTML=p?'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>':'<path d="M8 5v14l11-7z"/>'}
+function fT(s){let m=Math.floor(s/60),sc=Math.floor(s%60);return `${m}:${sc<10?'0':''}${sc}`}
+function seekByBar(e){audio.currentTime=(e.offsetX/e.currentTarget.offsetWidth)*audio.duration}
+audio.ontimeupdate=()=>{document.getElementById('progress-fill').style.width=(audio.currentTime/audio.duration*100||0)+'%';document.getElementById('cur-time').innerText=fT(audio.currentTime);if(audio.duration)document.getElementById('dur-time').innerText=fT(audio.duration)};
+function openLyrics(){const t=[...media.music,...media.podcasts].find(x=>x.id===curId);if(t?.lyrics){document.getElementById('text-content').innerText=t.lyrics;document.getElementById('text-modal').style.display='flex'}else if(curId)alert("Текста нет")}
+function setTab(t){currentTab=t;render();document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.id==='tab-'+t))}
+function setCategory(c){currentCategory=c;render();document.querySelectorAll('.cat-card').forEach(n=>n.classList.toggle('active',n.id==='btn-'+c))}
+function handleSearch(){searchQuery=document.getElementById('search-input').value;render()}
+function nextTrack(){let l=gAL(),i=l.findIndex(x=>x.id===curId);if(i<l.length-1)play(l[i+1])}
+function prevTrack(){let l=gAL(),i=l.findIndex(x=>x.id===curId);if(i>0)play(l[i-1])}
+function gAL(){return currentTab==='home'?media.music.filter(t=>t.likes>0):currentTab==='my'?media.music.filter(t=>localStorage.getItem('fav_'+t.id)):media[currentCategory]||[]}
+function tF(id){localStorage.getItem('fav_'+id)?localStorage.removeItem('fav_'+id):localStorage.setItem('fav_'+id,'1');render()}
+function downloadTrack(){const t=gAL().find(x=>x.id===curId);if(t){const a=document.createElement('a');a.href=t.url;a.download=t.title+".mp3";a.click()}}
+init();
 </script>
 </body>
 </html>
