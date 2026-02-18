@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>EVGEN MUSIC ULTIMATE</title>
+<title>EVGEN MUSIC FIXED</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
@@ -27,7 +27,7 @@ body{background:#020617;color:#fff;font-family:Inter,sans-serif;margin:0;padding
 .media-meta{font-size:.7rem;color:#94a3b8;margin-top:4px}
 .item-btns{display:flex;gap:12px;font-size:1.1rem;align-items:center}
 .player-panel{position:fixed;bottom:85px;left:50%;transform:translateX(-50%);width:95%;max-width:500px;background:rgba(13,18,30,.98);border:1px solid var(--border);border-radius:24px;padding:15px;z-index:1000;backdrop-filter:blur(20px)}
-#now-playing{color:var(--neon);text-align:center;font-size:.85rem;font-weight:700;margin-bottom:5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:5px}
+#now-playing{color:var(--neon);text-align:center;font-size:.85rem;font-weight:700;margin:0 auto 5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90%}
 .progress-area{height:6px;background:rgba(255,255,255,.1);border-radius:3px;margin:10px 0 5px;cursor:pointer;position:relative}
 #progress-fill{height:100%;background:var(--neon);width:0%;border-radius:3px;box-shadow:0 0 10px var(--neon)}
 .time-info{display:flex;justify-content:space-between;font-size:.65rem;color:#64748b;margin-bottom:12px}
@@ -63,7 +63,7 @@ body{background:#020617;color:#fff;font-family:Inter,sans-serif;margin:0;padding
 <div class="progress-area" onclick="seekByBar(event)"><div id="progress-fill"></div></div>
 <div class="time-info"><span id="cur-time">0:00</span><span id="dur-time">0:00</span></div>
 <div class="controls-row">
-<button class="ctrl-btn" onclick="shareCurrent()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
+<button class="ctrl-btn" onclick="openLyrics()"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2z"/></svg></button>
 <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
 <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
 <div class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg></div>
@@ -89,16 +89,15 @@ const[m,p,i,t]=await Promise.all([fG('music'),fG('podcasts'),fG('photos'),fG('te
 const map=f=>f&&f.name.endsWith('.mp3')?({id:f.name.replace('.mp3',''),title:dS(f.name.replace('.mp3','')),artist:'',url:f.download_url,img:DEF_IMG,likes:0,duration:'0:00',lyrics:''}):null;
 media.music=m.map(map).filter(x=>x);media.podcasts=p.map(map).filter(x=>x);
 media.photos=i.filter(f=>/\.(jpg|png|webp)$/i.test(f.name)).map(f=>({url:f.download_url}));
-media.texts=t.filter(f=>f.name.endsWith('.txt')).map(f=>({title:f.name.replace('.txt',''),url:f.download_url}));
+media.texts=t.filter(f=>f.name.endsWith('.txt')).map(f=>({title:dS(f.name.replace('.txt','')),url:f.download_url}));
 render();sDB().then(()=>render())}
 function dS(s){try{return decodeURIComponent(s)}catch(e){return s}}
-async fG(path){try{const r=await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`);return r.ok?await r.json():[]}catch(e){return []}}
-async sDB(){if(!sb)return;try{const{data}=await sb.from('likes').select('*');if(data)data.forEach(r=>{const t=[...media.music,...media.podcasts].find(x=>x.id===r.song_id);if(t){t.likes=r.count||0;t.duration=r.duration||'0:00';t.artist=r.artist||'';if(r.cover_data?.startsWith('data:'))t.img=r.cover_data;t.lyrics=r.lyrics||''}})}catch(e){}}
+async function fG(path){try{const r=await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`);return r.ok?await r.json():[]}catch(e){return []}}
+async function sDB(){if(!sb)return;try{const{data}=await sb.from('likes').select('*');if(data)data.forEach(r=>{const t=[...media.music,...media.podcasts].find(x=>x.id===r.song_id);if(t){t.likes=r.count||0;t.duration=r.duration||'0:00';t.artist=r.artist||'';if(r.cover_data?.startsWith('data:'))t.img=r.cover_data;t.lyrics=r.lyrics||''}})}catch(e){}}
 function render(){const c=document.getElementById('main-content');document.getElementById('catalog-ui').style.display=currentTab==='catalog'?'block':'none';c.innerHTML='';let l=[];if(currentTab==='home')l=media.music.filter(t=>t.likes>0);else if(currentTab==='my')l=media.music.filter(t=>localStorage.getItem('fav_'+t.id));else l=media[currentCategory]||[];if(searchQuery)l=l.filter(i=>(i.title||'').toLowerCase().includes(searchQuery.toLowerCase()));l.forEach(t=>{const e=document.createElement('div');e.className=`media-item ${curId===t.id?'active':''}`;if(currentCategory==='photos'&&currentTab==='catalog'){e.innerHTML=`<img src="${t.url}" style="width:100%;border-radius:12px">`}else if(currentCategory==='texts'&&currentTab==='catalog'){e.onclick=()=>sT(t.url);e.innerHTML=`<div class="media-info"><div class="media-name">📄 ${t.title}</div></div>`}else{e.onclick=()=>play(t);e.innerHTML=`<img src="${t.img}" class="media-img" onerror="this.src='${DEF_IMG}'"><div class="media-info"><div class="media-name">${t.title}</div><div class="media-meta">${t.artist?t.artist+' • ':''}${t.duration}</div></div><div class="item-btns"><span onclick="event.stopPropagation();tL('${t.id}')">${t.likes>0?'❤️':'🤍'}</span><span onclick="event.stopPropagation();tF('${t.id}')">${localStorage.getItem('fav_'+t.id)?'⭐':'➕'}</span></div>`}c.appendChild(e)})}
-async function play(t){if(curId===t.id){toggle();return}curId=t.id;document.getElementById('now-playing').innerText=(t.artist?t.artist+' - ':'')+t.title;document.getElementById('bg-layer').style.backgroundImage=`url(${t.img})`;try{const r=await fetch(t.url);const b=await r.blob();audio.src=URL.createObjectURL(b);audio.play();uB(1);jsmediatags.read(b,{onSuccess:tag=>{let u={},c=0;const g=tag.tags,a=g.artist||g.albumArtist||g.TPE1||"";if(a&&t.artist!==a){t.artist=a;u.artist=a;c=1}if(g.picture&&t.img===DEF_IMG){const{data,format}=g.picture;let s="";for(let i=0;i<data.length;i++)s+=String.fromCharCode(data[i]);const b64=`data:${format};base64,${window.btoa(s)}`;if(b64.length<1500000){t.img=b64;u.cover_data=b64;c=1}}if(g.lyrics?.lyrics&&!t.lyrics){t.lyrics=g.lyrics.lyrics;u.lyrics=t.lyrics;c=1}if(c&&sb)sb.from('likes').upsert({song_id:t.id,...u},{onConflict:'song_id'}).then(()=>render())}})}catch(e){}}
-async sT(u){try{const r=await fetch(u),b=await r.arrayBuffer();let t=new TextDecoder("utf-8").decode(b);if(t.includes(''))t=new TextDecoder("windows-1251").decode(b);document.getElementById('text-content').innerText=t;document.getElementById('text-modal').style.display='flex'}catch(e){}}
-function shareCurrent(){const t=[...media.music,...media.podcasts].find(x=>x.id===curId);if(navigator.share&&t)navigator.share({title:t.title,text:'Слушаю: '+t.title,url:location.href});else alert("Не поддерживается")}
-async tL(id){const t=[...media.music,...media.podcasts].find(x=>x.id===id);t.likes=t.likes?0:1;render();if(sb)await sb.from('likes').upsert({song_id:id,count:t.likes},{onConflict:'song_id'})}
+async function play(t){if(curId===t.id){toggle();return}curId=t.id;document.getElementById('now-playing').innerText=(t.artist?t.artist+' - ':'')+t.title;document.getElementById('bg-layer').style.backgroundImage=`url(${t.img})`;try{const r=await fetch(t.url);const b=await r.blob();audio.src=URL.createObjectURL(b);audio.play();uB(1);jsmediatags.read(b,{onSuccess:tag=>{let u={},c=0;const g=tag.tags,a=g.artist||g.albumArtist||"";if(a&&t.artist!==a){t.artist=a;u.artist=a;c=1}if(g.picture&&t.img===DEF_IMG){const{data,format}=g.picture;let s="";for(let i=0;i<data.length;i++)s+=String.fromCharCode(data[i]);const b64=`data:${format};base64,${window.btoa(s)}`;if(b64.length<1000000){t.img=b64;u.cover_data=b64;c=1}}if(g.lyrics?.lyrics&&!t.lyrics){t.lyrics=g.lyrics.lyrics;u.lyrics=t.lyrics;c=1}if(c&&sb)sb.from('likes').upsert({song_id:t.id,...u},{onConflict:'song_id'}).then(()=>render())}})}catch(e){audio.src=t.url;audio.play();uB(1)}}
+async function sT(u){try{const r=await fetch(u),b=await r.arrayBuffer();let t=new TextDecoder("utf-8").decode(b);if(t.includes(''))t=new TextDecoder("windows-1251").decode(b);document.getElementById('text-content').innerText=t;document.getElementById('text-modal').style.display='flex'}catch(e){alert("Ошибка загрузки текста")}}
+async function tL(id){const t=[...media.music,...media.podcasts].find(x=>x.id===id);t.likes=t.likes?0:1;render();if(sb)await sb.from('likes').upsert({song_id:id,count:t.likes},{onConflict:'song_id'})}
 function toggle(){audio.paused?audio.play():audio.pause();uB(!audio.paused)}
 function uB(p){document.getElementById('p-icon').innerHTML=p?'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>':'<path d="M8 5v14l11-7z"/>'}
 function fT(s){let m=Math.floor(s/60),sc=Math.floor(s%60);return `${m}:${sc<10?'0':''}${sc}`}
