@@ -3,258 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EVGEN MUSIC ULTIMATE</title>
+    <title>EVGEN MUSIC FIXED</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <style>
         :root { --neon: #00f2ff; --glass: rgba(255, 255, 255, 0.08); --border: rgba(255, 255, 255, 0.15); }
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { background: #020617; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; padding-bottom: 240px; overflow-x: hidden; }
-        #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.15); z-index: -1; transition: 1.5s; }
-        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; letter-spacing: 2px; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
-        .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; }
-        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 500px; margin: 0 auto 15px; }
-        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
-        .cat-card svg { width: 20px; height: 20px; fill: currentColor; }
+        * { box-sizing: border-box; outline: none; }
+        body { background: #020617; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; padding-bottom: 240px; }
+        #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.15); z-index: -1; }
+        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
+        #status-bar { text-align: center; font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px; }
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; border: 1px solid transparent; }
+        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
-        .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
+        .media-img { width: 50px; height: 50px; border-radius: 8px; margin-right: 12px; background: #000; }
         .media-info { flex-grow: 1; overflow: hidden; }
         .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
-        .item-btns { display: flex; gap: 12px; font-size: 1.1rem; align-items: center; }
-        .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
-        #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; position: relative; }
-        #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 10px var(--neon); }
-        .time-info { display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-bottom: 12px; }
-        .controls-row { display: flex; justify-content: space-between; align-items: center; }
-        .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; display: flex; align-items: center; }
-        .ctrl-btn svg { width: 24px; height: 24px; }
-        .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
-        .nav-item { color: #64748b; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+        .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.95); border: 1px solid var(--border); border-radius: 24px; padding: 15px; backdrop-filter: blur(20px); }
+        #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; }
+        .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; cursor: pointer; }
+        #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; }
+        .controls-row { display: flex; justify-content: space-around; align-items: center; margin-top: 15px; }
+        .play-btn { width: 50px; height: 50px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; }
+        .nav-item { color: #64748b; font-size: 0.7rem; text-align: center; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
-        .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
-        #text-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; padding: 25px; align-items: center; justify-content: center; }
-        #text-content { background: #1e293b; padding: 30px; border-radius: 20px; width: 100%; max-height: 75vh; overflow-y: auto; white-space: pre-wrap; text-align: center; }
     </style>
 </head>
 <body>
 
 <div id="bg-layer"></div>
-<header>
-    <div class="main-title">EVGEN MUSIC</div>
-    <input type="text" class="search-box" placeholder="Поиск..." id="search-input" oninput="handleSearch()">
-</header>
-
-<div id="catalog-ui" style="display:none;">
-    <div class="category-grid">
-        <div class="cat-card active" id="btn-music" onclick="setCategory('music')"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>Музыка</div>
-        <div class="cat-card" id="btn-podcasts" onclick="setCategory('podcasts')"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>Подк.</div>
-        <div class="cat-card" id="btn-photos" onclick="setCategory('photos')"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>Фото</div>
-        <div class="cat-card" id="btn-texts" onclick="setCategory('texts')"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2z"/></svg>Тексты</div>
-    </div>
-</div>
+<div class="main-title">EVGEN MUSIC</div>
+<div id="status-bar">Подключение к GitHub...</div>
 
 <div id="main-content" class="content-grid"></div>
 
 <div class="player-panel">
-    <div id="now-playing" onclick="openLyrics()">ВЫБЕРИТЕ ТРЕК</div>
-    <div class="progress-area" onclick="seekByBar(event)"><div id="progress-fill"></div></div>
-    <div class="time-info"><span id="cur-time">0:00</span><span id="dur-time">0:00</span></div>
+    <div id="now-playing">ВЫБЕРИТЕ ТРЕК</div>
+    <div class="progress-area" onclick="seek(event)"><div id="progress-fill"></div></div>
     <div class="controls-row">
-        <button class="ctrl-btn" onclick="openLyrics()"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2z"/></svg></button>
-        <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
-        <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-        <div class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg></div>
-        <button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-        <button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
-        <button class="ctrl-btn" onclick="downloadTrack()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
+        <button style="background:none; border:none; color:#fff;" onclick="prev()">⏮</button>
+        <div class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="24"><path d="M8 5v14l11-7z"/></svg></div>
+        <button style="background:none; border:none; color:#fff;" onclick="next()">⏭</button>
     </div>
 </div>
 
 <nav class="bottom-nav">
-    <div class="nav-item active" id="tab-home" onclick="setTab('home')"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Главная</span></div>
-    <div class="nav-item" id="tab-catalog" onclick="setTab('catalog')"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg><span>Каталог</span></div>
-    <div class="nav-item" id="tab-my" onclick="setTab('my')"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>Моё</span></div>
+    <div class="nav-item active" onclick="location.reload()">🔄<span>Обновить</span></div>
+    <div class="nav-item">📁<span>Музыка</span></div>
 </nav>
 
-<div id="text-modal" onclick="this.style.display='none'"><div id="text-content" onclick="event.stopPropagation()"></div></div>
-<audio id="audio-engine" crossorigin="anonymous"></audio>
+<audio id="audio"></audio>
 
 <script>
-    const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
-    const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
-    
-    let media = { music: [], podcasts: [], photos: [], texts: [] };
-    let currentTab = 'home', currentCategory = 'music', curId = null, searchQuery = '', sb = null;
-    const audio = document.getElementById('audio-engine');
-
-    try { sb = supabase.createClient(S_URL, S_KEY); } catch(e) {}
+    const G_USER = 'evgensmoke', G_REPO = 'Mymusic';
+    const audio = document.getElementById('audio');
+    let tracks = [];
+    let curIdx = -1;
 
     async function init() {
-        const fetchFiles = async (p) => {
-            try {
-                const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${p}`);
-                if (!r.ok) return [];
-                const data = await r.json();
-                return Array.isArray(data) ? data : [];
-            } catch(e) { console.error("GitHub API Error:", e); return []; }
-        };
+        const status = document.getElementById('status-bar');
+        try {
+            // Прямой запрос к API GitHub
+            const resp = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/music`);
+            if (!resp.ok) throw new Error(`Ошибка GitHub: ${resp.status}`);
+            
+            const files = await resp.json();
+            tracks = files.filter(f => f.name.endsWith('.mp3')).map(f => ({
+                name: decodeURIComponent(f.name.replace('.mp3', '')),
+                url: f.download_url,
+                id: f.name
+            }));
 
-        const [mF, pF, iF, tF] = await Promise.all([
-            fetchFiles('music'), fetchFiles('podcasts'), fetchFiles('photos'), fetchFiles('texts')
-        ]);
-        
-        const mapMP3 = (f) => f.filter(x => x.name.endsWith('.mp3')).map(x => ({
-            id: x.name, title: decodeURIComponent(x.name.replace('.mp3', '')), artist: '', 
-            url: x.download_url, img: DEF_IMG, likes: 0, duration: '0:00', lyrics: ''
-        }));
-
-        media.music = mapMP3(mF);
-        media.podcasts = mapMP3(pF);
-        media.photos = iF.filter(x => /\.(jpg|png|webp)$/i.test(x.name)).map(x => ({ url: x.download_url }));
-        media.texts = tF.filter(x => x.name.endsWith('.txt')).map(x => ({ 
-            title: decodeURIComponent(x.name.replace('.txt', '')), url: x.download_url 
-        }));
-
-        await syncDB();
-        render();
-    }
-
-    async function syncDB() {
-        if (!sb) return;
-        const { data } = await sb.from('likes').select('*');
-        if (data) data.forEach(r => {
-            const t = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
-            if (t) {
-                t.likes = r.count || 0;
-                t.duration = r.duration || '0:00';
-                t.artist = r.artist || '';
-                if (r.cover_data?.startsWith('data:')) t.img = r.cover_data;
-                t.lyrics = r.lyrics || '';
-            }
-        });
+            status.innerText = `Загружено треков: ${tracks.length}`;
+            render();
+        } catch (e) {
+            status.innerText = "Ошибка загрузки. Проверь VPN или лимиты GitHub.";
+            console.error(e);
+        }
     }
 
     function render() {
-        const c = document.getElementById('main-content');
-        document.getElementById('catalog-ui').style.display = (currentTab === 'catalog' ? 'block' : 'none');
-        c.innerHTML = '';
-
-        let list = (currentTab === 'home') ? media.music.filter(t => t.likes > 0) : 
-                   (currentTab === 'my') ? media.music.filter(t => localStorage.getItem('fav_'+t.id)) : 
-                   (media[currentCategory] || []);
-        
-        if (searchQuery) list = list.filter(i => (i.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
-
-        list.forEach(t => {
-            const el = document.createElement('div');
-            el.className = `media-item ${curId === t.id ? 'active' : ''}`;
-            if (currentCategory === 'photos' && currentTab === 'catalog') {
-                el.innerHTML = `<img src="${t.url}" style="width:100%; border-radius:12px;">`;
-            } else if (currentCategory === 'texts' && currentTab === 'catalog') {
-                el.onclick = () => showText(t.url);
-                el.innerHTML = `<div class="media-info"><div class="media-name">📄 ${t.title}</div></div>`;
-            } else {
-                el.onclick = () => play(t);
-                el.innerHTML = `
-                    <img src="${t.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
-                    <div class="media-info">
-                        <div class="media-name">${t.title}</div>
-                        <div class="media-meta">${t.artist ? t.artist + ' • ' : ''}${t.duration}</div>
-                    </div>
-                    <div class="item-btns">
-                        <span onclick="event.stopPropagation(); toggleLike('${t.id}')">${t.likes > 0 ? '❤️' : '🤍'}</span>
-                        <span onclick="event.stopPropagation(); toggleFav('${t.id}')">${localStorage.getItem('fav_'+t.id) ? '⭐' : '➕'}</span>
-                    </div>`;
-            }
-            c.appendChild(el);
-        });
+        const container = document.getElementById('main-content');
+        container.innerHTML = tracks.map((t, i) => `
+            <div class="media-item ${curIdx === i ? 'active' : ''}" onclick="playTrack(${i})">
+                <div class="media-img"></div>
+                <div class="media-info">
+                    <div class="media-name">${t.name}</div>
+                </div>
+            </div>
+        `).join('');
     }
 
-    async function play(t) {
-        if (curId === t.id) { toggle(); return; }
-        curId = t.id;
-        document.getElementById('now-playing').innerText = (t.artist ? t.artist + ' - ' : '') + t.title;
-        document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
-        
-        try {
-            // Скачиваем файл как Blob, чтобы обойти проблемы с чтением тегов
-            const res = await fetch(t.url);
-            const blob = await res.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            audio.src = blobUrl;
-            audio.play();
-            updateBtn(true);
-            
-            // Читаем теги из Blob
-            jsmediatags.read(blob, {
-                onSuccess: (tag) => {
-                    let upd = {}, changed = false;
-                    const g = tag.tags;
-                    if (g.artist && t.artist !== g.artist) { t.artist = g.artist; upd.artist = g.artist; changed = true; }
-                    if (g.picture && t.img === DEF_IMG) {
-                        const { data, format } = g.picture;
-                        let s = ""; for (let i = 0; i < data.length; i++) s += String.fromCharCode(data[i]);
-                        const b64 = `data:${format};base64,${window.btoa(s)}`;
-                        if (b64.length < 800000) { t.img = b64; upd.cover_data = b64; changed = true; }
-                    }
-                    if (changed && sb) sb.from('likes').upsert({ song_id: t.id, ...upd }, { onConflict: 'song_id' }).then(() => render());
-                }
-            });
-        } catch(e) { 
-            audio.src = t.url; audio.play(); updateBtn(true);
-        }
+    function playTrack(i) {
+        curIdx = i;
+        const t = tracks[i];
+        audio.src = t.url;
+        audio.play();
+        document.getElementById('now-playing').innerText = t.name;
+        updateBtn(true);
         render();
     }
 
-    async function showText(url) {
-        try {
-            const r = await fetch(url);
-            const buf = await r.arrayBuffer();
-            const txt = new TextDecoder("utf-8").decode(buf);
-            document.getElementById('text-content').innerText = txt;
-            document.getElementById('text-modal').style.display = 'flex';
-        } catch(e) { alert("Ошибка загрузки текста"); }
+    function toggle() {
+        if (audio.paused) { audio.play(); updateBtn(true); }
+        else { audio.pause(); updateBtn(false); }
     }
 
-    async function toggleLike(id) {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === id);
-        t.likes = t.likes ? 0 : 1;
-        render();
-        if (sb) await sb.from('likes').upsert({ song_id: id, count: t.likes }, { onConflict: 'song_id' });
+    function updateBtn(playing) {
+        document.getElementById('p-icon').innerHTML = playing 
+            ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>' 
+            : '<path d="M8 5v14l11-7z"/>';
     }
 
-    function toggle() { audio.paused ? audio.play() : audio.pause(); updateBtn(!audio.paused); }
-    function updateBtn(p) { document.getElementById('p-icon').innerHTML = p ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
-    function formatTime(s) { let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
-    function seekByBar(e) { audio.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * audio.duration; }
-    
+    function next() { if (curIdx < tracks.length - 1) playTrack(curIdx + 1); }
+    function prev() { if (curIdx > 0) playTrack(curIdx - 1); }
+
     audio.ontimeupdate = () => {
-        document.getElementById('progress-fill').style.width = (audio.currentTime / audio.duration * 100 || 0) + '%';
-        document.getElementById('cur-time').innerText = formatTime(audio.currentTime);
-        if (audio.duration) document.getElementById('dur-time').innerText = formatTime(audio.duration);
+        const p = (audio.currentTime / audio.duration) * 100 || 0;
+        document.getElementById('progress-fill').style.width = p + '%';
     };
 
-    function toggleFav(id) { localStorage.getItem('fav_'+id) ? localStorage.removeItem('fav_'+id) : localStorage.setItem('fav_'+id, '1'); render(); }
-    function setTab(t) { currentTab = t; render(); document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.id==='tab-'+t)); }
-    function setCategory(c) { currentCategory = c; render(); document.querySelectorAll('.cat-card').forEach(n => n.classList.toggle('active', n.id==='btn-'+c)); }
-    function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
-    function nextTrack() { let l = getActiveList(), i = l.findIndex(x => x.id === curId); if (i < l.length - 1) play(l[i+1]); }
-    function prevTrack() { let l = getActiveList(), i = l.findIndex(x => x.id === curId); if (i > 0) play(l[i-1]); }
-    function getActiveList() { return currentTab === 'home' ? media.music.filter(t => t.likes > 0) : currentTab === 'my' ? media.music.filter(t => localStorage.getItem('fav_'+t.id)) : media[currentCategory] || []; }
-    function openLyrics() { 
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if (t?.lyrics) { document.getElementById('text-content').innerText = t.lyrics; document.getElementById('text-modal').style.display = 'flex'; }
-    }
-    function downloadTrack() {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if (t) { const a = document.createElement('a'); a.href = t.url; a.download = t.title + ".mp3"; a.click(); }
+    function seek(e) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const p = (e.clientX - rect.left) / rect.width;
+        audio.currentTime = p * audio.duration;
     }
 
     init();
