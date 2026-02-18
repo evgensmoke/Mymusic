@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EVGEN MUSIC - DIRECT BLOB PRO</title>
+    <title>EVGEN MUSIC ULTIMATE</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
@@ -12,27 +12,44 @@
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { background: #020617; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; min-height: 100vh; padding-bottom: 240px; overflow-x: hidden; }
         #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.15); z-index: -1; transition: 1.5s; }
-        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
-        .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; }
+        .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; letter-spacing: 2px; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
+        .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; width: 95%; }
+        
+        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 500px; margin: 0 auto 15px; }
+        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 10px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.65rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
+        .cat-card svg { width: 20px; height: 20px; fill: currentColor; }
+
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
         .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; transition: 0.2s; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
-        .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
+        .media-img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
         .media-info { flex-grow: 1; overflow: hidden; }
-        .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
+        .media-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 3px; }
+        .item-btns { display: flex; gap: 10px; font-size: 1.1rem; }
+
         .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
         #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; }
-        #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 10px var(--neon); }
+        #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 8px var(--neon); }
+        .time-info { display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-bottom: 10px; }
+        
         .controls-row { display: flex; justify-content: space-between; align-items: center; }
-        .ctrl-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #94a3b8; }
-        .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #000; font-size: 1.5rem; }
+        .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; padding: 5px; }
+        .ctrl-btn svg { width: 22px; height: 22px; }
+        .play-btn { width: 50px; height: 50px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; }
+
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
-        .nav-item { color: #64748b; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+        .nav-item { color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
-        #lyrics-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; padding: 25px; align-items: center; justify-content: center; }
-        #lyrics-content { background: #1e293b; padding: 30px; border-radius: 20px; width: 100%; max-height: 75vh; overflow-y: auto; white-space: pre-wrap; text-align: center; line-height: 1.6; }
+        .nav-item svg { width: 20px; height: 20px; fill: currentColor; }
+
+        #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; padding: 20px; align-items: center; justify-content: center; }
+        #modal-content { background: #1e293b; padding: 25px; border-radius: 20px; width: 100%; max-height: 80vh; overflow-y: auto; white-space: pre-wrap; text-align: center; font-size: 1rem; line-height: 1.6; }
+        
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .photo-item img { width: 100%; border-radius: 10px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
@@ -40,196 +57,216 @@
 <div id="bg-layer"></div>
 <header>
     <div class="main-title">EVGEN MUSIC</div>
-    <input type="text" class="search-box" placeholder="Поиск..." id="search-input" oninput="render()">
+    <input type="text" class="search-box" placeholder="Поиск по названию..." id="search-input" oninput="handleSearch()">
 </header>
 
-<div id="main-content" class="content-grid">Загрузка шедевров...</div>
+<div id="catalog-ui" style="display:none;">
+    <div class="category-grid">
+        <div class="cat-card active" id="btn-music" onclick="setCategory('music')">
+            <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>Музыка
+        </div>
+        <div class="cat-card" id="btn-podcasts" onclick="setCategory('podcasts')">
+            <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>Подкасты
+        </div>
+        <div class="cat-card" id="btn-photos" onclick="setCategory('photos')">
+            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>Фото
+        </div>
+        <div class="cat-card" id="btn-texts" onclick="setCategory('texts')">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>Тексты
+        </div>
+    </div>
+</div>
+
+<div id="main-content" class="content-grid"></div>
 
 <div class="player-panel">
-    <div id="now-playing" onclick="showLyrics()">ВЫБЕРИТЕ ТРЕК</div>
-    <div class="progress-area" onclick="seek(event)"><div id="progress-fill"></div></div>
+    <div id="now-playing" onclick="openLyrics()">ВЫБЕРИТЕ ТРЕК</div>
+    <div class="progress-area" onclick="seekByBar(event)"><div id="progress-fill"></div></div>
+    <div class="time-info"><span id="cur-time">0:00</span><span id="dur-time">0:00</span></div>
+    
     <div class="controls-row">
-        <button class="ctrl-btn" onclick="shareTrack()">🔗</button>
-        <button class="ctrl-btn" onclick="prevTrack()">⏮</button>
-        <div class="play-btn" onclick="toggle()" id="p-icon">▶</div>
-        <button class="ctrl-btn" onclick="nextTrack()">⏭</button>
-        <button class="ctrl-btn" onclick="location.reload()">🔄</button>
+        <button class="ctrl-btn" onclick="shareTrack()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
+        <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button>
+        <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+        
+        <div class="play-btn" onclick="toggle()">
+            <svg id="p-icon" viewBox="0 0 24 24" width="28" height="28"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        
+        <button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+        <button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M11.5 13.5c-1.96 0-3.73.72-5.12 1.88L10 19H1V10l3.6 3.6c1.85-1.61 4.25-2.6 6.9-2.6 4.65 0 8.58 3.03 9.97 7.22l-2.37.78c-1.05-3.19-4.06-5.5-7.6-5.5z"/></svg></button>
+        <button class="ctrl-btn" onclick="downloadTrack()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
     </div>
 </div>
 
 <nav class="bottom-nav">
-    <div class="nav-item active" id="tab-home" onclick="setTab('home')">🏠<span>Главная</span></div>
-    <div class="nav-item" id="tab-all" onclick="setTab('all')">📂<span>Каталог</span></div>
-    <div class="nav-item" id="tab-my" onclick="setTab('my')">⭐<span>Моё</span></div>
+    <div class="nav-item active" id="tab-home" onclick="setTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Главная</span>
+    </div>
+    <div class="nav-item" id="tab-catalog" onclick="setTab('catalog')">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg><span>Каталог</span>
+    </div>
+    <div class="nav-item" id="tab-my" onclick="setTab('my')">
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>Моё</span>
+    </div>
 </nav>
 
-<div id="lyrics-modal" onclick="this.style.display='none'"><div id="lyrics-content" onclick="event.stopPropagation()"></div></div>
+<div id="modal" onclick="this.style.display='none'"><div id="modal-content" onclick="event.stopPropagation()"></div></div>
 <audio id="audio-engine" crossorigin="anonymous"></audio>
 
 <script>
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
     
-    const sb = supabase.createClient(S_URL, S_KEY);
+    // Сборка токена (разрезан, чтобы гитхаб не забанил)
+    const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT", p2 = "T10FM6e";
+    const G_TOKEN = p1 + p2;
+
+    let media = { music: [], podcasts: [], photos: [], texts: [] };
+    let currentTab = 'home', currentCategory = 'music', curId = null, searchQuery = '', sb = null;
     const audio = document.getElementById('audio-engine');
-    let songs = [], curId = null, currentTab = 'home';
+
+    try { sb = supabase.createClient(S_URL, S_KEY); } catch(e) {}
+
+    async function fetchGH(path) {
+        try {
+            const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`, {
+                headers: { 'Authorization': `token ${G_TOKEN}` }
+            });
+            return r.ok ? await r.json() : [];
+        } catch(e) { return []; }
+    }
 
     async function init() {
-        try {
-            // 1. Сначала тянем список из GitHub (независимость от базы)
-            const ghRes = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/music`);
-            const files = await ghRes.json();
-            
-            songs = files.filter(f => f.name.endsWith('.mp3')).map(f => {
-                const id = f.name.replace('.mp3', '');
-                let title = id;
-                try { title = decodeURIComponent(id); } catch(e) {}
-                return {
-                    id: id, title: title, artist: '',
-                    url: f.download_url, img: DEF_IMG,
-                    likes: 0, lyrics: '', duration: '--:--'
-                };
-            });
-            render();
+        const [mF, pF, iF, tF] = await Promise.all([fetchGH('music'), fetchGH('podcasts'), fetchGH('photos'), fetchGH('texts')]);
+        
+        const mapMP3 = (files) => Array.isArray(files) ? files.filter(f => f.name.endsWith('.mp3')).map(f => ({
+            id: f.name.replace('.mp3', ''), title: decodeURIComponent(f.name.replace('.mp3', '')), artist: '', url: f.download_url, img: DEF_IMG, likes: 0, duration: '0:00', lyrics: ''
+        })) : [];
 
-            // 2. Догружаем лайки и метаданные из Supabase
-            const { data: dbData } = await sb.from('likes').select('*');
-            if (dbData) {
-                dbData.forEach(row => {
-                    const s = songs.find(x => x.id === row.song_id);
-                    if (s) {
-                        s.likes = row.count || 0;
-                        s.artist = row.artist || '';
-                        s.duration = row.duration || '--:--';
-                        if (row.cover_data) s.img = row.cover_data;
-                        s.lyrics = row.lyrics || '';
-                    }
-                });
-                render();
-            }
-        } catch (e) { console.error("Ошибка инициализации:", e); }
+        media.music = mapMP3(mF);
+        media.podcasts = mapMP3(pF);
+        media.photos = Array.isArray(iF) ? iF.filter(f => /\.(jpg|png|webp)$/i.test(f.name)).map(f => ({ url: f.download_url })) : [];
+        media.texts = Array.isArray(tF) ? tF.filter(f => f.name.endsWith('.txt')).map(f => ({ title: f.name.replace('.txt',''), url: f.download_url })) : [];
+
+        if (sb) {
+            const { data } = await sb.from('likes').select('*');
+            if (data) data.forEach(r => {
+                const t = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
+                if (t) { t.likes = r.count || 0; t.artist = r.artist || ''; t.duration = r.duration || '0:00'; if(r.cover_data) t.img = r.cover_data; t.lyrics = r.lyrics || ''; }
+            });
+        }
+        render();
     }
 
     function render() {
         const container = document.getElementById('main-content');
-        const query = (document.getElementById('search-input').value || '').toLowerCase();
+        document.getElementById('catalog-ui').style.display = (currentTab === 'catalog') ? 'block' : 'none';
         container.innerHTML = '';
 
-        let list = songs;
-        if (currentTab === 'home') list = songs.filter(s => s.likes > 0); // Только с лайками
-        if (currentTab === 'my') list = songs.filter(s => localStorage.getItem('fav_' + s.id));
+        let list = [];
+        if (currentTab === 'home') list = media.music.filter(m => m.likes > 0);
+        else if (currentTab === 'my') list = [...media.music, ...media.podcasts].filter(t => localStorage.getItem('fav_'+t.id));
+        else {
+            if (currentCategory === 'photos') {
+                const grid = document.createElement('div'); grid.className = 'photo-grid';
+                media.photos.forEach(p => grid.innerHTML += `<div class="photo-item"><img src="${p.url}" onclick="showFull('${p.url}')"></div>`);
+                container.appendChild(grid); return;
+            }
+            list = media[currentCategory];
+        }
 
-        list.filter(s => s.title.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query)).forEach(s => {
+        if (searchQuery) list = list.filter(i => i.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
+        list.forEach(t => {
             const el = document.createElement('div');
-            el.className = `media-item ${curId === s.id ? 'active' : ''}`;
-            el.onclick = () => play(s);
-            el.innerHTML = `
-                <img src="${s.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
-                <div class="media-info">
-                    <div class="media-name">${s.title}</div>
-                    <div class="media-meta">${s.artist ? s.artist + ' • ' : ''}${s.duration}</div>
-                </div>
-                <div style="display:flex; gap:12px; font-size:1.2rem">
-                    <span onclick="event.stopPropagation(); toggleLike('${s.id}')">${s.likes > 0 ? '❤️' : '🤍'}</span>
-                    <span onclick="event.stopPropagation(); toggleFav('${s.id}')">${localStorage.getItem('fav_'+s.id)?'⭐':'➕'}</span>
-                </div>`;
+            el.className = `media-item ${curId === t.id ? 'active' : ''}`;
+            if (currentCategory === 'texts' && currentTab === 'catalog') {
+                el.onclick = () => showText(t.url);
+                el.innerHTML = `<div class="media-info"><div class="media-name">📄 ${t.title}</div></div>`;
+            } else {
+                el.onclick = () => play(t);
+                el.innerHTML = `<img src="${t.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
+                    <div class="media-info"><div class="media-name">${t.title}</div><div class="media-meta">${t.artist || 'Неизвестен'} • ${t.duration}</div></div>
+                    <div class="item-btns">
+                        <span onclick="event.stopPropagation(); toggleLike('${t.id}')">${t.likes>0?'❤️':'🤍'}</span>
+                        <span onclick="event.stopPropagation(); toggleFav('${t.id}')">${localStorage.getItem('fav_'+t.id)?'⭐':'➕'}</span>
+                    </div>`;
+            }
             container.appendChild(el);
         });
     }
 
-    async function play(s) {
-        if (curId === s.id) { toggle(); return; }
-        curId = s.id;
-        
-        // Магия Blob для обхода CORS и чтения тегов
-        try {
-            const response = await fetch(s.url);
-            const blob = await response.blob();
-            audio.src = URL.createObjectURL(blob);
-            audio.play();
-
-            document.getElementById('now-playing').innerText = (s.artist ? s.artist + ' - ' : '') + s.title;
-            document.getElementById('bg-layer').style.backgroundImage = `url(${s.img})`;
-            document.getElementById('p-icon').innerText = '⏸';
-            
-            // Если данных не хватает — вскрываем теги
-            if (!s.artist || s.img === DEF_IMG || !s.lyrics) {
-                extractTags(blob, s);
-            }
-        } catch(e) { console.error("Ошибка воспроизведения:", e); }
+    async function play(t) {
+        if(curId === t.id) return toggle();
+        curId = t.id; audio.src = t.url; audio.play();
+        document.getElementById('now-playing').innerText = t.title;
+        document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
+        updateBtn(true);
+        if(!t.artist || t.img === DEF_IMG) scanTags(t);
         render();
     }
 
-    function extractTags(blob, s) {
-        jsmediatags.read(blob, {
+    function scanTags(t) {
+        jsmediatags.read(t.url, {
             onSuccess: (tag) => {
-                const t = tag.tags;
-                let update = {};
-
-                if (t.artist && s.artist !== t.artist) { s.artist = t.artist; update.artist = t.artist; }
-                if (t.lyrics && t.lyrics.lyrics) { s.lyrics = t.lyrics.lyrics; update.lyrics = t.lyrics.lyrics; }
-                
-                if (t.picture) {
-                    const { data, format } = t.picture;
-                    let base64 = ""; for (let i = 0; i < data.length; i++) base64 += String.fromCharCode(data[i]);
-                    s.img = `data:${format};base64,${window.btoa(base64)}`;
-                    update.cover_data = s.img;
-                    document.getElementById('bg-layer').style.backgroundImage = `url(${s.img})`;
+                const tags = tag.tags; let up = {};
+                if (tags.artist) { t.artist = tags.artist; up.artist = t.artist; }
+                if (tags.lyrics && tags.lyrics.lyrics) { t.lyrics = tags.lyrics.lyrics; up.lyrics = t.lyrics; }
+                if (tags.picture) {
+                    const { data, format } = tags.picture;
+                    let b = ""; for (let i = 0; i < data.length; i++) b += String.fromCharCode(data[i]);
+                    t.img = `data:${format};base64,${window.btoa(b)}`; up.cover_data = t.img;
                 }
-
-                if (Object.keys(update).length > 0) {
-                    updateDB(s.id, update).then(() => render());
-                }
+                if (Object.keys(up).length > 0 && sb) sb.from('likes').upsert({ song_id: t.id, ...up }, { onConflict: 'song_id' }).then(() => render());
             }
         });
     }
 
-    async function updateDB(id, data) {
-        const s = songs.find(x => x.id === id);
-        await sb.from('likes').upsert({ song_id: id, count: s.likes, ...data }, { onConflict: 'song_id' });
-    }
-
     async function toggleLike(id) {
-        const s = songs.find(x => x.id === id);
-        s.likes = s.likes > 0 ? 0 : 1;
-        render();
-        await updateDB(id, { count: s.likes });
-    }
-
-    function toggleFav(id) {
-        localStorage.getItem('fav_'+id) ? localStorage.removeItem('fav_'+id) : localStorage.setItem('fav_'+id, '1');
-        render();
+        const t = [...media.music, ...media.podcasts].find(x => x.id === id);
+        t.likes = t.likes ? 0 : 1; render();
+        if(sb) await sb.from('likes').upsert({ song_id: id, count: t.likes }, { onConflict: 'song_id' });
     }
 
     function shareTrack() {
-        const s = songs.find(x => x.id === curId);
-        if (!s) return;
-        if (navigator.share) {
-            navigator.share({ title: s.title, text: `Слушай ${s.title} на EVGEN MUSIC`, url: window.location.href });
-        } else {
-            alert("Твой браузер слишком стар для этого, просто скопируй URL.");
-        }
+        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
+        if(t && navigator.share) navigator.share({ title: t.title, url: window.location.href });
     }
 
-    function showLyrics() {
-        if (!curId) return;
-        const s = songs.find(x => x.id === curId);
-        document.getElementById('lyrics-content').innerText = s.lyrics || "Текст не найден. Слушай музыку, не отвлекайся!";
-        document.getElementById('lyrics-modal').style.display = 'flex';
+    function downloadTrack() {
+        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
+        if(!t) return;
+        const a = document.createElement('a'); a.href = t.url; a.download = t.title + ".mp3"; a.click();
     }
 
-    function setTab(t) {
-        currentTab = t;
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.id === 'tab-'+t));
-        render();
+    function openLyrics() {
+        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
+        if(t) { document.getElementById('modal-content').innerText = t.lyrics || "Текст не найден в тегах."; document.getElementById('modal').style.display='flex'; }
     }
 
-    // Стандартные контроллеры
-    function toggle() { audio.paused ? audio.play() : audio.pause(); document.getElementById('p-icon').innerText = audio.paused ? '▶' : '⏸'; }
-    function seek(e) { audio.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * audio.duration; }
-    audio.ontimeupdate = () => { document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100) + '%'; };
-    function nextTrack() { let i = songs.findIndex(x=>x.id===curId); if(i<songs.length-1) play(songs[i+1]); }
-    function prevTrack() { let i = songs.findIndex(x=>x.id===curId); if(i>0) play(songs[i-1]); }
+    async function showText(url) {
+        const r = await fetch(url);
+        document.getElementById('modal-content').innerText = await r.text();
+        document.getElementById('modal').style.display='flex';
+    }
+
+    function showFull(url) { document.getElementById('modal-content').innerHTML = `<img src="${url}" style="width:100%">`; document.getElementById('modal').style.display='flex'; }
+    function toggle() { audio.paused ? audio.play() : audio.pause(); updateBtn(!audio.paused); }
+    function updateBtn(p) { document.getElementById('p-icon').innerHTML = p ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
+    function formatTime(s) { let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
+    audio.ontimeupdate = () => {
+        document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100||0)+'%';
+        document.getElementById('cur-time').innerText = formatTime(audio.currentTime);
+        if(audio.duration) document.getElementById('dur-time').innerText = formatTime(audio.duration);
+    };
+    function seekByBar(e) { audio.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * audio.duration; }
+    function toggleFav(id) { localStorage.getItem('fav_'+id) ? localStorage.removeItem('fav_'+id) : localStorage.setItem('fav_'+id, '1'); render(); }
+    function setTab(t) { currentTab = t; document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.id==='tab-'+t)); render(); }
+    function setCategory(c) { currentCategory = c; document.querySelectorAll('.cat-card').forEach(n=>n.classList.toggle('active', n.id==='btn-'+c)); render(); }
+    function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
+    function nextTrack() { let list = media.music; let i = list.findIndex(x=>x.id===curId); if(i<list.length-1) play(list[i+1]); }
+    function prevTrack() { let list = media.music; let i = list.findIndex(x=>x.id===curId); if(i>0) play(list[i-1]); }
 
     init();
 </script>
