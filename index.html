@@ -15,23 +15,24 @@
         .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; letter-spacing: 2px; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
         .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; }
         .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 500px; margin: 0 auto 15px; }
-        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s; }
         .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; position: relative; }
+        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; position: relative; transition: 0.2s; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
         .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
         .media-info { flex-grow: 1; overflow: hidden; }
         .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 60px; }
         .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
         .item-btns { position: absolute; right: 10px; display: flex; gap: 10px; font-size: 1.1rem; }
-        .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
+        .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; }
         #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 10px var(--neon); }
         .time-info { display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-bottom: 12px; }
         .controls-row { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
-        .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; display: flex; align-items: center; padding: 5px; }
+        .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; display: flex; align-items: center; padding: 5px; transition: 0.2s; }
+        .ctrl-btn:active { transform: scale(0.9); fill: var(--neon); }
         .ctrl-btn svg { width: 28px; height: 28px; }
         .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; box-shadow: 0 0 15px rgba(0,242,255,0.3); border: none; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
@@ -70,11 +71,11 @@
         
         <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
         
-        <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+        <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
         
         <button class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg></button>
         
-        <button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+        <button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
         
         <button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
         
@@ -95,7 +96,6 @@
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
     
-    // ТОКЕН (Склеиваем, чтобы боты не украли сразу)
     const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT"; 
     const p2 = "T10FM6e"; 
     const G_TOKEN = p1 + p2;
@@ -110,14 +110,14 @@
         const paths = ['music', 'podcasts', 'photos', 'texts'];
         const results = await Promise.all(paths.map(p => fetchGH(p)));
         
-        const mapTrack = (f) => {
+        const mapTrack = (f, category) => {
             const n = f.name.replace('.mp3', '');
             let title = n; try { title = decodeURIComponent(n); } catch(e) {}
-            return { id: n, title: title, artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '' };
+            return { id: n, title: title, artist: 'Загрузка...', url: f.download_url, path: `${category}/${f.name}`, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '' };
         };
 
-        media.music = (Array.isArray(results[0]) ? results[0] : []).filter(f => f.name.endsWith('.mp3')).map(mapTrack);
-        media.podcasts = (Array.isArray(results[1]) ? results[1] : []).filter(f => f.name.endsWith('.mp3')).map(mapTrack);
+        media.music = (Array.isArray(results[0]) ? results[0] : []).filter(f => f.name.endsWith('.mp3')).map(f => mapTrack(f, 'music'));
+        media.podcasts = (Array.isArray(results[1]) ? results[1] : []).filter(f => f.name.endsWith('.mp3')).map(f => mapTrack(f, 'podcasts'));
         media.photos = (Array.isArray(results[2]) ? results[2] : []).filter(f => /\.(jpg|png|webp)$/i.test(f.name)).map(f => ({ url: f.download_url }));
         media.texts = (Array.isArray(results[3]) ? results[3] : []).filter(f => f.name.endsWith('.txt')).map(f => ({ title: f.name.replace('.txt',''), url: f.download_url }));
 
@@ -127,7 +127,7 @@
                 const t = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
                 if (t) { 
                     t.likes = r.count || 0; t.duration = r.duration || '0:00'; 
-                    t.artist = r.artist || 'Неизвестен'; if(r.cover_data) t.img = r.cover_data;
+                    t.artist = r.artist || 'Загрузка...'; if(r.cover_data) t.img = r.cover_data;
                     t.lyrics = r.lyrics || '';
                 }
             });
@@ -179,7 +179,9 @@
 
     function play(t) {
         if (curId === t.id) return toggle();
-        curId = t.id; audio.src = t.url; audio.play();
+        curId = t.id; 
+        audio.src = t.url; 
+        audio.play().catch(e => console.error("Play failed", e));
         document.getElementById('now-playing').innerText = t.title;
         document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
         updateBtn(true);
@@ -188,8 +190,14 @@
 
     async function scanFile(t) {
         try {
-            // Используем токен для загрузки файла напрямую и обхода CORS
-            const r = await fetch(t.url, { headers: { 'Authorization': `token ${G_TOKEN}` } });
+            // КЛЮЧЕВОЙ МОМЕНТ: Используем API, а не Raw-ссылку для обхода CORS
+            const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${t.path}`, {
+                headers: { 
+                    'Authorization': `token ${G_TOKEN}`,
+                    'Accept': 'application/vnd.github.v3.raw'
+                }
+            });
+            if (!r.ok) throw new Error("CORS or Token fail");
             const blob = await r.blob();
             jsmediatags.read(blob, {
                 onSuccess: (tag) => {
@@ -207,7 +215,7 @@
                     if (sb) sb.from('likes').upsert(up, { onConflict: 'song_id' }).then(() => render());
                 }
             });
-        } catch(e) {}
+        } catch(e) { console.warn("Tag reading skipped", e); }
     }
 
     async function toggleLike(id) {
@@ -220,7 +228,7 @@
     function toggleFav(id) { localStorage.getItem('fav_'+id) ? localStorage.removeItem('fav_'+id) : localStorage.setItem('fav_'+id, '1'); render(); }
     function toggle() { audio.paused ? audio.play() : audio.pause(); updateBtn(!audio.paused); }
     function updateBtn(p) { document.getElementById('p-icon').innerHTML = p ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
-    function formatTime(s) { let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
+    function formatTime(s) { if(isNaN(s)) return '0:00'; let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
     
     audio.ontimeupdate = () => {
         document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100||0)+'%';
@@ -233,8 +241,8 @@
     function setCategory(c) { currentCategory = c; render(); }
     function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
     
-    function nextTrack() { let l = currentCategory==='podcasts'?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i<l.length-1) play(l[i+1]); }
-    function prevTrack() { let l = currentCategory==='podcasts'?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i>0) play(l[i-1]); }
+    function nextTrack() { let l = (currentTab==='home'||currentCategory==='music')?media.music:media.podcasts; let i = l.findIndex(x=>x.id===curId); if(i<l.length-1) play(l[i+1]); }
+    function prevTrack() { let l = (currentTab==='home'||currentCategory==='music')?media.music:media.podcasts; let i = l.findIndex(x=>x.id===curId); if(i>0) play(l[i-1]); }
     
     function share() { const t = [...media.music, ...media.podcasts].find(x => x.id === curId); if(navigator.share) navigator.share({ title: t?.title, url: window.location.href }); }
     async function download() {
