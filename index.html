@@ -25,6 +25,7 @@
         .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 60px; }
         .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
         .item-btns { position: absolute; right: 10px; display: flex; gap: 10px; font-size: 1.1rem; }
+        .dev-badge { color: #facc15; font-size: 0.6rem; font-weight: bold; border: 1px solid #facc15; padding: 2px 5px; border-radius: 4px; margin-bottom: 5px; display: inline-block; }
         .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
         #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; }
@@ -101,7 +102,7 @@
         const results = await Promise.all(paths.map(p => fetchGH(p)));
         const mapTrack = (f, cat) => {
             const n = f.name.replace('.mp3', '');
-            return { id: n, title: decodeURIComponent(n), artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '' };
+            return { id: n, title: decodeURIComponent(n), artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '', cat: cat };
         };
         media.music = (results[0]||[]).filter(f=>f.name.endsWith('.mp3')).map(f=>mapTrack(f,'music')).reverse();
         media.podcasts = (results[1]||[]).filter(f=>f.name.endsWith('.mp3')).map(f=>mapTrack(f,'podcasts')).reverse();
@@ -124,12 +125,22 @@
         const container = document.getElementById('main-content');
         document.getElementById('catalog-ui').style.display = (currentTab === 'catalog') ? 'block' : 'none';
         container.innerHTML = '';
-        let list = (currentTab === 'home') ? media.music : (currentTab === 'my') ? [...media.music, ...media.podcasts].filter(t => localStorage.getItem('fav_'+t.id)) : (media[currentCategory] || []);
+        
+        let list = [];
+        if (currentTab === 'home') {
+            list = media.music.filter(t => t.likes > 0);
+        } else if (currentTab === 'my') {
+            list = [...media.music, ...media.podcasts].filter(t => localStorage.getItem('fav_'+t.id));
+        } else {
+            list = (media[currentCategory] || []);
+        }
+
         if (searchQuery) list = list.filter(i => (i.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
 
         list.forEach(item => {
             const el = document.createElement('div');
             el.className = `media-item ${curId === item.id ? 'active' : ''}`;
+            
             if (currentCategory === 'photos' && currentTab === 'catalog') {
                 el.innerHTML = `<img src="${item.url}" style="width:100%; border-radius:12px;">`;
             } else if (currentCategory === 'texts' && currentTab === 'catalog') {
@@ -137,8 +148,9 @@
                 el.innerHTML = `<div class="media-info"><div class="media-name">📄 ${item.title}</div></div>`;
             } else {
                 el.onclick = () => play(item);
+                let devLabel = (item.cat === 'podcasts') ? '<div class="dev-badge">В РАЗРАБОТКЕ</div>' : '';
                 el.innerHTML = `<img src="${item.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
-                    <div class="media-info"><div class="media-name">${item.title}</div><div class="media-meta">${item.artist} • ${item.duration}</div></div>
+                    <div class="media-info">${devLabel}<div class="media-name">${item.title}</div><div class="media-meta">${item.artist} • ${item.duration}</div></div>
                     <div class="item-btns"><span onclick="event.stopPropagation(); toggleLike('${item.id}')">${localStorage.getItem('lk_'+item.id)?'❤️':'🤍'}</span>
                     <span onclick="event.stopPropagation(); toggleFav('${item.id}')">${localStorage.getItem('fav_'+item.id)?'⭐':'➕'}</span></div>`;
             }
@@ -178,7 +190,17 @@
     }
 
     audio.onended = () => nextTrack();
-    function setCategory(c) { currentCategory = c; document.querySelectorAll('.cat-card').forEach(el => el.classList.toggle('active', el.id==='btn-'+c)); render(); }
+    
+    function setCategory(c) { 
+        if (c === 'podcasts') {
+            const p = prompt("Введите пароль доступа:");
+            if (p !== '1285') { alert("Неверно!"); return; }
+        }
+        currentCategory = c; 
+        document.querySelectorAll('.cat-card').forEach(el => el.classList.toggle('active', el.id==='btn-'+c)); 
+        render(); 
+    }
+
     function setTab(t) { currentTab = t; document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.id==='tab-'+t)); if(t!=='catalog') currentCategory='music'; render(); }
     async function toggleLike(id) { const t = [...media.music, ...media.podcasts].find(x => x.id === id); localStorage.getItem('lk_'+id)?(t.likes--, localStorage.removeItem('lk_'+id)):(t.likes++, localStorage.setItem('lk_'+id,'1')); render(); if(sb) await sb.from('likes').upsert({song_id:id, count:t.likes},{onConflict:'song_id'}); }
     function toggleFav(id) { localStorage.getItem('fav_'+id)?localStorage.removeItem('fav_'+id):localStorage.setItem('fav_'+id,'1'); render(); }
@@ -191,9 +213,32 @@
     function nextTrack() { let l = (currentCategory==='podcasts')?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i<l.length-1) play(l[i+1]); }
     function prevTrack() { let l = (currentCategory==='podcasts')?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i>0) play(l[i-1]); }
     function share() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(navigator.share) navigator.share({title:t?.title, url:window.location.href}); }
-    async function download() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(!t) return; const r = await fetch(t.url); const b = await r.blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = t.title + ".mp3"; a.click(); }
+    
+    async function download() { 
+        const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); 
+        if(!t) return; 
+        const r = await fetch(t.url); 
+        const b = await r.blob(); 
+        if (window.showSaveFilePicker) {
+            try {
+                const h = await window.showSaveFilePicker({ suggestedName: t.title + ".mp3", types: [{ description: 'Audio', accept: {'audio/mpeg': ['.mp3']} }] });
+                const w = await h.createWritable(); await w.write(b); await w.close();
+            } catch(e) {}
+        } else {
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = t.title + ".mp3"; a.click(); 
+        }
+    }
+
     function openLyrics() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(t){document.getElementById('modal-content').innerText = t.lyrics||"Текст не найден."; document.getElementById('modal').style.display='flex';} }
-    async function showText(u) { const r = await fetch(u); const d = new TextDecoder('utf-8'); const b = await r.arrayBuffer(); document.getElementById('modal-content').innerText = d.decode(b); document.getElementById('modal').style.display='flex'; }
+    
+    async function showText(u) { 
+        const r = await fetch(u); 
+        const b = await r.arrayBuffer(); 
+        let txt = new TextDecoder('utf-8').decode(b);
+        if (txt.includes('')) txt = new TextDecoder('windows-1251').decode(b);
+        document.getElementById('modal-content').innerText = txt; 
+        document.getElementById('modal').style.display='flex'; 
+    }
 
     init();
 </script>
