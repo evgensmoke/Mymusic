@@ -69,13 +69,13 @@
     
     <div class="controls-row">
         <button class="ctrl-btn" onclick="share()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
-        <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button>
+        <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
         <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
         
         <button class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg></button>
         
         <button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-        <button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M11.5 13.5c-1.96 0-3.73.72-5.12 1.88L10 19H1V10l3.6 3.6c1.85-1.61 4.25-2.6 6.9-2.6 4.65 0 8.58 3.03 9.97 7.22l-2.37.78c-1.05-3.19-4.06-5.5-7.6-5.5z"/></svg></button>
+        <button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
         <button class="ctrl-btn" onclick="download()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
     </div>
 </div>
@@ -93,7 +93,7 @@
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
     
-    // ТОКЕН ЗДЕСЬ (РАЗДЕЛЕН НА ЧАСТИ)
+    // ТОКЕН ТУТ (РАЗДЕЛЕН)
     const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT"; 
     const p2 = "T10FM6e"; 
     const G_TOKEN = p1 + p2;
@@ -102,20 +102,20 @@
     let currentTab = 'home', currentCategory = 'music', curId = null, searchQuery = '', sb = null;
     const audio = document.getElementById('audio-engine');
 
-    try { sb = supabase.createClient(S_URL, S_KEY); } catch(e) { console.error("Supabase init error"); }
+    try { sb = supabase.createClient(S_URL, S_KEY); } catch(e) { console.error("Supabase fail"); }
 
     async function init() {
         const [mF, pF, iF, tF] = await Promise.all([
             fetchGH('music'), fetchGH('podcasts'), fetchGH('photos'), fetchGH('texts')
         ]);
         
-        const mapper = (f) => ({ 
-            id: f.name.replace('.mp3', ''), 
-            title: decodeURIComponent(f.name.replace('.mp3', '')), 
-            artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, 
-            duration: '0:00', likes: 0, lyrics: '' 
-        });
+        const mapper = (f) => {
+            const n = f.name.replace('.mp3', '');
+            let title = n; try { title = decodeURIComponent(n); } catch(e) {}
+            return { id: n, title: title, artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '' };
+        };
 
+        // Защита от ошибок GitHub (если вернул не массив)
         media.music = (Array.isArray(mF) ? mF : []).filter(f => f.name.endsWith('.mp3')).map(mapper);
         media.podcasts = (Array.isArray(pF) ? pF : []).filter(f => f.name.endsWith('.mp3')).map(mapper);
         media.photos = (Array.isArray(iF) ? iF : []).filter(f => /\.(jpg|png|webp)$/i.test(f.name)).map(f => ({ url: f.download_url }));
@@ -126,10 +126,8 @@
             if (data) data.forEach(r => {
                 const t = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
                 if (t) { 
-                    t.likes = r.count || 0; 
-                    t.duration = r.duration || '0:00'; 
-                    t.artist = r.artist || 'Загрузка...'; 
-                    if(r.cover_data) t.img = r.cover_data;
+                    t.likes = r.count || 0; t.duration = r.duration || '0:00'; 
+                    t.artist = r.artist || 'Загрузка...'; if(r.cover_data) t.img = r.cover_data;
                     t.lyrics = r.lyrics || '';
                 }
             });
@@ -142,8 +140,7 @@
             const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`, {
                 headers: { 'Authorization': `token ${G_TOKEN}` }
             });
-            if (!r.ok) return [];
-            return await r.json();
+            return r.ok ? await r.json() : [];
         } catch(e) { return []; }
     }
 
@@ -159,7 +156,7 @@
             const el = document.createElement('div');
             el.className = `media-item ${curId === item.id ? 'active' : ''}`;
             if (currentCategory === 'photos' && currentTab === 'catalog') {
-                el.innerHTML = `<img src="${item.url}" style="width:100%; border-radius:12px; margin-bottom:10px;">`;
+                el.innerHTML = `<img src="${item.url}" style="width:100%; border-radius:12px;">`;
             } else if (currentCategory === 'texts' && currentTab === 'catalog') {
                 el.onclick = () => showText(item.url);
                 el.innerHTML = `<div class="media-info"><div class="media-name">📄 ${item.title}</div></div>`;
@@ -180,28 +177,27 @@
         });
     }
 
-    async function play(t) {
+    function play(t) {
         if (curId === t.id) return toggle();
         curId = t.id; audio.src = t.url; audio.play();
         document.getElementById('now-playing').innerText = t.title;
         document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
         updateBtn(true);
-        scanFile(t); 
-        render();
+        scanFile(t); render();
     }
 
-    function scanFile(t) {
-        // Мы скачиваем файл через токен как Blob, чтобы библиотека jsmediatags не ругалась на CORS
-        fetch(t.url, { headers: { 'Authorization': `token ${G_TOKEN}` } })
-        .then(r => r.blob())
-        .then(blob => {
+    async function scanFile(t) {
+        // Качаем файл через токен как Blob, чтобы обойти CORS и прочитать теги
+        try {
+            const r = await fetch(t.url, { headers: { 'Authorization': `token ${G_TOKEN}` } });
+            const blob = await r.blob();
             jsmediatags.read(blob, {
                 onSuccess: (tag) => {
                     const tags = tag.tags;
                     let up = { song_id: t.id, count: t.likes };
                     if (tags.artist) { t.artist = tags.artist; up.artist = t.artist; }
                     if (audio.duration) { t.duration = formatTime(audio.duration); up.duration = t.duration; }
-                    if (tags.lyrics && tags.lyrics.lyrics) { t.lyrics = tags.lyrics.lyrics; up.lyrics = t.lyrics; }
+                    if (tags.lyrics?.lyrics) { t.lyrics = tags.lyrics.lyrics; up.lyrics = t.lyrics; }
                     if (tags.picture) {
                         const { data, format } = tags.picture;
                         let b = ""; for (let i = 0; i < data.length; i++) b += String.fromCharCode(data[i]);
@@ -211,7 +207,7 @@
                     if (sb) sb.from('likes').upsert(up, { onConflict: 'song_id' }).then(() => render());
                 }
             });
-        });
+        } catch(e) { console.error("Tag read fail", e); }
     }
 
     async function toggleLike(id) {
@@ -237,18 +233,11 @@
     function setCategory(c) { currentCategory = c; render(); document.querySelectorAll('.cat-card').forEach(n => n.classList.toggle('active', n.id==='btn-'+c)); }
     function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
     
-    function nextTrack() { 
-        let list = (currentCategory==='podcasts'?media.podcasts:media.music);
-        let i = list.findIndex(x => x.id === curId); if (i < list.length - 1) play(list[i+1]); 
-    }
-    function prevTrack() { 
-        let list = (currentCategory==='podcasts'?media.podcasts:media.music);
-        let i = list.findIndex(x => x.id === curId); if (i > 0) play(list[i-1]); 
-    }
+    function nextTrack() { let l = currentCategory==='podcasts'?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i<l.length-1) play(l[i+1]); }
+    function prevTrack() { let l = currentCategory==='podcasts'?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i>0) play(l[i-1]); }
     function share() { const t = [...media.music, ...media.podcasts].find(x => x.id === curId); if(navigator.share) navigator.share({ title: t?.title, url: window.location.href }); }
     async function download() {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if(!t) return;
+        const t = [...media.music, ...media.podcasts].find(x => x.id === curId); if(!t) return;
         const r = await fetch(t.url); const b = await r.blob();
         const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = t.title + ".mp3"; a.click();
     }
@@ -257,10 +246,8 @@
         if(t) { document.getElementById('modal-content').innerText = t.lyrics || "Текст не найден."; document.getElementById('modal').style.display = 'flex'; }
     }
     async function showText(url) { 
-        const r = await fetch(url);
-        const buf = await r.arrayBuffer();
+        const r = await fetch(url); const buf = await r.arrayBuffer();
         let txt = new TextDecoder("utf-8").decode(buf);
-        if (txt.includes('')) txt = new TextDecoder("windows-1251").decode(buf);
         document.getElementById('modal-content').innerText = txt;
         document.getElementById('modal').style.display = 'flex';
     }
