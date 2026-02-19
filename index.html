@@ -14,11 +14,9 @@
         #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.15); z-index: -1; transition: 1.5s; }
         .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; letter-spacing: 2px; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
         .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; }
-        
         .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 500px; margin: 0 auto 15px; }
-        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s; }
+        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
-        
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
         .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; position: relative; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
@@ -27,7 +25,6 @@
         .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 60px; }
         .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
         .item-btns { position: absolute; right: 10px; display: flex; gap: 10px; font-size: 1.1rem; }
-        
         .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
         #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; }
@@ -37,12 +34,10 @@
         .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; display: flex; align-items: center; padding: 5px; }
         .ctrl-btn svg { width: 26px; height: 26px; }
         .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; border: none; }
-        
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; padding-bottom: 5px; }
-        .nav-item { color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; transition: 0.3s; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
+        .nav-item { color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--neon); }
         .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
-        
         #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; padding: 25px; align-items: center; justify-content: center; }
         #modal-content { background: #1e293b; padding: 30px; border-radius: 20px; width: 100%; max-height: 75vh; overflow-y: auto; white-space: pre-wrap; text-align: center; }
     </style>
@@ -70,7 +65,6 @@
     <div id="now-playing" onclick="openLyrics()">ВЫБЕРИТЕ ТРЕК</div>
     <div class="progress-area" onclick="seekByBar(event)"><div id="progress-fill"></div></div>
     <div class="time-info"><span id="cur-time">0:00</span><span id="dur-time">0:00</span></div>
-    
     <div class="controls-row">
         <button class="ctrl-btn" onclick="share()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
         <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
@@ -83,18 +77,9 @@
 </div>
 
 <nav class="bottom-nav">
-    <div class="nav-item active" id="tab-home" onclick="setTab('home')">
-        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        <span>Главная</span>
-    </div>
-    <div class="nav-item" id="tab-catalog" onclick="setTab('catalog')">
-        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-        <span>Каталог</span>
-    </div>
-    <div class="nav-item" id="tab-my" onclick="setTab('my')">
-        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        <span>Моё</span>
-    </div>
+    <div class="nav-item active" id="tab-home" onclick="setTab('home')"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Главная</span></div>
+    <div class="nav-item" id="tab-catalog" onclick="setTab('catalog')"><svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg><span>Каталог</span></div>
+    <div class="nav-item" id="tab-my" onclick="setTab('my')"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><span>Моё</span></div>
 </nav>
 
 <div id="modal" onclick="this.style.display='none'"><div id="modal-content" onclick="event.stopPropagation()"></div></div>
@@ -103,11 +88,7 @@
 <script>
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
-    
-    // Тот самый разделенный токен
-    const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT"; 
-    const p2 = "T10FM6e"; 
-    const G_TOKEN = p1 + p2;
+    const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT", p2 = "T10FM6e", G_TOKEN = p1 + p2;
 
     let media = { music: [], podcasts: [], photos: [], texts: [] };
     let currentTab = 'home', currentCategory = 'music', curId = null, searchQuery = '', sb = null;
@@ -118,44 +99,31 @@
     async function init() {
         const paths = ['music', 'podcasts', 'photos', 'texts'];
         const results = await Promise.all(paths.map(p => fetchGH(p)));
-        
         const mapTrack = (f, cat) => {
             const n = f.name.replace('.mp3', '');
-            let title = n; try { title = decodeURIComponent(n); } catch(e) {}
-            return { id: n, title: title, artist: 'Загрузка...', url: f.download_url, path: `${cat}/${f.name}`, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '' };
+            return { id: n, title: decodeURIComponent(n), artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '' };
         };
-
-        media.music = (Array.isArray(results[0]) ? results[0] : []).filter(f => f.name.endsWith('.mp3')).map(f => mapTrack(f, 'music')).reverse();
-        media.podcasts = (Array.isArray(results[1]) ? results[1] : []).filter(f => f.name.endsWith('.mp3')).map(f => mapTrack(f, 'podcasts')).reverse();
-        media.photos = (Array.isArray(results[2]) ? results[2] : []).filter(f => /\.(jpg|png|webp)$/i.test(f.name)).map(f => ({ url: f.download_url })).reverse();
-        media.texts = (Array.isArray(results[3]) ? results[3] : []).filter(f => f.name.endsWith('.txt')).map(f => ({ title: f.name.replace('.txt',''), url: f.download_url })).reverse();
+        media.music = (results[0]||[]).filter(f=>f.name.endsWith('.mp3')).map(f=>mapTrack(f,'music')).reverse();
+        media.podcasts = (results[1]||[]).filter(f=>f.name.endsWith('.mp3')).map(f=>mapTrack(f,'podcasts')).reverse();
+        media.photos = (results[2]||[]).filter(f=>/\.(jpg|png|webp)$/i.test(f.name)).map(f=>({url:f.download_url})).reverse();
+        media.texts = (results[3]||[]).filter(f=>f.name.endsWith('.txt')).map(f=>({title:f.name.replace('.txt',''), url:f.download_url})).reverse();
 
         if (sb) {
             const { data } = await sb.from('likes').select('*');
             if (data) data.forEach(r => {
                 const t = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
-                if (t) { 
-                    t.likes = r.count || 0; t.duration = r.duration || '0:00'; 
-                    t.artist = r.artist || 'Неизвестен'; if(r.cover_data) t.img = r.cover_data;
-                    t.lyrics = r.lyrics || '';
-                }
+                if (t) { t.likes = r.count||0; t.duration = r.duration||'0:00'; t.artist = r.artist||'Неизвестен'; if(r.cover_data) t.img = r.cover_data; t.lyrics = r.lyrics||''; }
             });
         }
         render();
     }
 
-    async function fetchGH(path) {
-        try {
-            const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`, { headers: { 'Authorization': `token ${G_TOKEN}` } });
-            return r.ok ? await r.json() : [];
-        } catch(e) { return []; }
-    }
+    async function fetchGH(p) { const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${p}`, {headers:{'Authorization':`token ${G_TOKEN}`}}); return r.ok?await r.json():[]; }
 
     function render() {
         const container = document.getElementById('main-content');
         document.getElementById('catalog-ui').style.display = (currentTab === 'catalog') ? 'block' : 'none';
         container.innerHTML = '';
-
         let list = (currentTab === 'home') ? media.music : (currentTab === 'my') ? [...media.music, ...media.podcasts].filter(t => localStorage.getItem('fav_'+t.id)) : (media[currentCategory] || []);
         if (searchQuery) list = list.filter(i => (i.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -163,22 +131,16 @@
             const el = document.createElement('div');
             el.className = `media-item ${curId === item.id ? 'active' : ''}`;
             if (currentCategory === 'photos' && currentTab === 'catalog') {
-                el.innerHTML = `<img src="${item.url}" style="width:100%; border-radius:12px; margin-bottom:10px;">`;
+                el.innerHTML = `<img src="${item.url}" style="width:100%; border-radius:12px;">`;
             } else if (currentCategory === 'texts' && currentTab === 'catalog') {
                 el.onclick = () => showText(item.url);
                 el.innerHTML = `<div class="media-info"><div class="media-name">📄 ${item.title}</div></div>`;
             } else {
                 el.onclick = () => play(item);
-                el.innerHTML = `
-                    <img src="${item.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
-                    <div class="media-info">
-                        <div class="media-name">${item.title}</div>
-                        <div class="media-meta">${item.artist} • ${item.duration}</div>
-                    </div>
-                    <div class="item-btns">
-                        <span onclick="event.stopPropagation(); toggleLike('${item.id}')">${localStorage.getItem('lk_'+item.id)?'❤️':'🤍'}</span>
-                        <span onclick="event.stopPropagation(); toggleFav('${item.id}')">${localStorage.getItem('fav_'+item.id)?'⭐':'➕'}</span>
-                    </div>`;
+                el.innerHTML = `<img src="${item.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
+                    <div class="media-info"><div class="media-name">${item.title}</div><div class="media-meta">${item.artist} • ${item.duration}</div></div>
+                    <div class="item-btns"><span onclick="event.stopPropagation(); toggleLike('${item.id}')">${localStorage.getItem('lk_'+item.id)?'❤️':'🤍'}</span>
+                    <span onclick="event.stopPropagation(); toggleFav('${item.id}')">${localStorage.getItem('fav_'+item.id)?'⭐':'➕'}</span></div>`;
             }
             container.appendChild(el);
         });
@@ -194,9 +156,7 @@
 
     async function scanFile(t) {
         try {
-            const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${t.path}`, {
-                headers: { 'Authorization': `token ${G_TOKEN}`, 'Accept': 'application/vnd.github.v3.raw' }
-            });
+            const r = await fetch(t.url);
             const blob = await r.blob();
             jsmediatags.read(blob, {
                 onSuccess: (tag) => {
@@ -214,73 +174,26 @@
                     if (sb) sb.from('likes').upsert(up, { onConflict: 'song_id' }).then(() => render());
                 }
             });
-        } catch(e) {}
+        } catch(e) { console.error("Scan error", e); }
     }
 
     audio.onended = () => nextTrack();
-
-    function setCategory(c) {
-        currentCategory = c;
-        document.querySelectorAll('.cat-card').forEach(el => el.classList.remove('active'));
-        document.getElementById('btn-' + c).classList.add('active');
-        render();
-    }
-
-    function setTab(t) {
-        currentTab = t;
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        document.getElementById('tab-' + t).classList.add('active');
-        if (t !== 'catalog') currentCategory = 'music';
-        render();
-    }
-
-    async function toggleLike(id) {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === id);
-        localStorage.getItem('lk_'+id) ? (t.likes--, localStorage.removeItem('lk_'+id)) : (t.likes++, localStorage.setItem('lk_'+id, '1'));
-        render();
-        if(sb) await sb.from('likes').upsert({ song_id: id, count: t.likes }, { onConflict: 'song_id' });
-    }
-
-    function toggleFav(id) { localStorage.getItem('fav_'+id) ? localStorage.removeItem('fav_'+id) : localStorage.setItem('fav_'+id, '1'); render(); }
-    function toggle() { audio.paused ? audio.play() : audio.pause(); updateBtn(!audio.paused); }
-    function updateBtn(p) { document.getElementById('p-icon').innerHTML = p ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>' : '<path d="M8 5v14l11-7z"/>'; }
+    function setCategory(c) { currentCategory = c; document.querySelectorAll('.cat-card').forEach(el => el.classList.toggle('active', el.id==='btn-'+c)); render(); }
+    function setTab(t) { currentTab = t; document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.id==='tab-'+t)); if(t!=='catalog') currentCategory='music'; render(); }
+    async function toggleLike(id) { const t = [...media.music, ...media.podcasts].find(x => x.id === id); localStorage.getItem('lk_'+id)?(t.likes--, localStorage.removeItem('lk_'+id)):(t.likes++, localStorage.setItem('lk_'+id,'1')); render(); if(sb) await sb.from('likes').upsert({song_id:id, count:t.likes},{onConflict:'song_id'}); }
+    function toggleFav(id) { localStorage.getItem('fav_'+id)?localStorage.removeItem('fav_'+id):localStorage.setItem('fav_'+id,'1'); render(); }
+    function toggle() { audio.paused?audio.play():audio.pause(); updateBtn(!audio.paused); }
+    function updateBtn(p) { document.getElementById('p-icon').innerHTML = p?'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>':'<path d="M8 5v14l11-7z"/>'; }
     function formatTime(s) { let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
-    
-    audio.ontimeupdate = () => {
-        document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100||0)+'%';
-        document.getElementById('cur-time').innerText = formatTime(audio.currentTime);
-        if(audio.duration) document.getElementById('dur-time').innerText = formatTime(audio.duration);
-    };
-
-    function seekByBar(e) { audio.currentTime = (e.offsetX / e.currentTarget.offsetWidth) * audio.duration; }
+    audio.ontimeupdate = () => { document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100||0)+'%'; document.getElementById('cur-time').innerText = formatTime(audio.currentTime); if(audio.duration) document.getElementById('dur-time').innerText = formatTime(audio.duration); };
+    function seekByBar(e) { audio.currentTime = (e.offsetX/e.currentTarget.offsetWidth)*audio.duration; }
     function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
-    
-    function nextTrack() { 
-        let l = (currentCategory==='podcasts') ? media.podcasts : media.music;
-        let i = l.findIndex(x=>x.id===curId); if(i < l.length-1) play(l[i+1]); 
-    }
-    function prevTrack() { 
-        let l = (currentCategory==='podcasts') ? media.podcasts : media.music;
-        let i = l.findIndex(x=>x.id===curId); if(i > 0) play(l[i-1]); 
-    }
-    
-    function share() { const t = [...media.music, ...media.podcasts].find(x => x.id === curId); if(navigator.share) navigator.share({ title: t?.title, url: window.location.href }); }
-    async function download() {
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId); if(!t) return;
-        const r = await fetch(t.url); const b = await r.blob();
-        const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = t.title + ".mp3"; a.click();
-    }
-    function openLyrics() { 
-        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
-        if(t) { document.getElementById('modal-content').innerText = t.lyrics || "Текст не найден."; document.getElementById('modal').style.display = 'flex'; }
-    }
-    async function showText(url) { 
-        const r = await fetch(url);
-        const decoder = new TextDecoder('utf-8');
-        const buffer = await r.arrayBuffer();
-        document.getElementById('modal-content').innerText = decoder.decode(buffer);
-        document.getElementById('modal').style.display = 'flex';
-    }
+    function nextTrack() { let l = (currentCategory==='podcasts')?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i<l.length-1) play(l[i+1]); }
+    function prevTrack() { let l = (currentCategory==='podcasts')?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i>0) play(l[i-1]); }
+    function share() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(navigator.share) navigator.share({title:t?.title, url:window.location.href}); }
+    async function download() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(!t) return; const r = await fetch(t.url); const b = await r.blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = t.title + ".mp3"; a.click(); }
+    function openLyrics() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(t){document.getElementById('modal-content').innerText = t.lyrics||"Текст не найден."; document.getElementById('modal').style.display='flex';} }
+    async function showText(u) { const r = await fetch(u); const d = new TextDecoder('utf-8'); const b = await r.arrayBuffer(); document.getElementById('modal-content').innerText = d.decode(b); document.getElementById('modal').style.display='flex'; }
 
     init();
 </script>
