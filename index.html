@@ -14,9 +14,11 @@
         #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(60px) brightness(0.15); z-index: -1; transition: 1.5s; }
         .main-title { font-family: 'Orbitron', sans-serif; color: var(--neon); text-align: center; letter-spacing: 2px; font-size: 1.5rem; margin: 15px 0; text-shadow: 0 0 10px var(--neon); }
         .search-box { width: 100%; max-width: 500px; margin: 0 auto 15px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 12px 20px; color: #fff; display: block; font-size: 16px; }
+        
         .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 500px; margin: 0 auto 15px; }
-        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; transition: 0.3s; }
         .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
+        
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
         .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; position: relative; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
@@ -25,6 +27,7 @@
         .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 60px; }
         .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
         .item-btns { position: absolute; right: 10px; display: flex; gap: 10px; font-size: 1.1rem; }
+        
         .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
         #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; }
@@ -34,9 +37,12 @@
         .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; display: flex; align-items: center; padding: 5px; }
         .ctrl-btn svg { width: 26px; height: 26px; }
         .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; border: none; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
-        .nav-item { color: #64748b; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; flex: 1; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; padding-bottom: 5px; }
+        .nav-item { color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex: 1; transition: 0.3s; }
         .nav-item.active { color: var(--neon); }
+        .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
+        
         #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; padding: 25px; align-items: center; justify-content: center; }
         #modal-content { background: #1e293b; padding: 30px; border-radius: 20px; width: 100%; max-height: 75vh; overflow-y: auto; white-space: pre-wrap; text-align: center; }
     </style>
@@ -67,25 +73,28 @@
     
     <div class="controls-row">
         <button class="ctrl-btn" onclick="share()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
-        
         <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
-        
         <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-        
         <button class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg></button>
-        
         <button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-        
         <button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
-        
         <button class="ctrl-btn" onclick="download()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
     </div>
 </div>
 
 <nav class="bottom-nav">
-    <div class="nav-item active" id="tab-home" onclick="setTab('home')"><span>Главная</span></div>
-    <div class="nav-item" id="tab-catalog" onclick="setTab('catalog')"><span>Каталог</span></div>
-    <div class="nav-item" id="tab-my" onclick="setTab('my')"><span>Моё</span></div>
+    <div class="nav-item active" id="tab-home" onclick="setTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Главная</span>
+    </div>
+    <div class="nav-item" id="tab-catalog" onclick="setTab('catalog')">
+        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        <span>Каталог</span>
+    </div>
+    <div class="nav-item" id="tab-my" onclick="setTab('my')">
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <span>Моё</span>
+    </div>
 </nav>
 
 <div id="modal" onclick="this.style.display='none'"><div id="modal-content" onclick="event.stopPropagation()"></div></div>
@@ -95,7 +104,10 @@
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
     
-    const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT"; const p2 = "T10FM6e"; const G_TOKEN = p1 + p2;
+    // Тот самый разделенный токен
+    const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT"; 
+    const p2 = "T10FM6e"; 
+    const G_TOKEN = p1 + p2;
 
     let media = { music: [], podcasts: [], photos: [], texts: [] };
     let currentTab = 'home', currentCategory = 'music', curId = null, searchQuery = '', sb = null;
@@ -113,7 +125,6 @@
             return { id: n, title: title, artist: 'Загрузка...', url: f.download_url, path: `${cat}/${f.name}`, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '' };
         };
 
-        // СОРТИРОВКА: .reverse() ставит новые (по алфавиту Гитхаба) наверх
         media.music = (Array.isArray(results[0]) ? results[0] : []).filter(f => f.name.endsWith('.mp3')).map(f => mapTrack(f, 'music')).reverse();
         media.podcasts = (Array.isArray(results[1]) ? results[1] : []).filter(f => f.name.endsWith('.mp3')).map(f => mapTrack(f, 'podcasts')).reverse();
         media.photos = (Array.isArray(results[2]) ? results[2] : []).filter(f => /\.(jpg|png|webp)$/i.test(f.name)).map(f => ({ url: f.download_url })).reverse();
@@ -206,7 +217,6 @@
         } catch(e) {}
     }
 
-    // АВТОПЛЕЙ
     audio.onended = () => nextTrack();
 
     function setCategory(c) {
@@ -220,6 +230,7 @@
         currentTab = t;
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         document.getElementById('tab-' + t).classList.add('active');
+        if (t !== 'catalog') currentCategory = 'music';
         render();
     }
 
@@ -245,14 +256,12 @@
     function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
     
     function nextTrack() { 
-        let l = (currentTab==='home'||currentCategory==='music') ? media.music : media.podcasts;
-        let i = l.findIndex(x=>x.id===curId); 
-        if(i < l.length-1) play(l[i+1]); 
+        let l = (currentCategory==='podcasts') ? media.podcasts : media.music;
+        let i = l.findIndex(x=>x.id===curId); if(i < l.length-1) play(l[i+1]); 
     }
     function prevTrack() { 
-        let l = (currentTab==='home'||currentCategory==='music') ? media.music : media.podcasts;
-        let i = l.findIndex(x=>x.id===curId); 
-        if(i > 0) play(l[i-1]); 
+        let l = (currentCategory==='podcasts') ? media.podcasts : media.music;
+        let i = l.findIndex(x=>x.id===curId); if(i > 0) play(l[i-1]); 
     }
     
     function share() { const t = [...media.music, ...media.podcasts].find(x => x.id === curId); if(navigator.share) navigator.share({ title: t?.title, url: window.location.href }); }
