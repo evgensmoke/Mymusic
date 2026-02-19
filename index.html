@@ -19,7 +19,7 @@
         .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
         .cat-card svg { width: 20px; height: 20px; fill: currentColor; }
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; transition: 0.2s; position: relative; }
+        .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; position: relative; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
         .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
         .media-info { flex-grow: 1; overflow: hidden; }
@@ -27,14 +27,14 @@
         .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
         .item-btns { position: absolute; right: 10px; display: flex; gap: 10px; font-size: 1.1rem; }
         .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
-        #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; }
         #progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 3px; box-shadow: 0 0 10px var(--neon); }
         .time-info { display: flex; justify-content: space-between; font-size: 0.65rem; color: #64748b; margin-bottom: 12px; }
         .controls-row { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
         .ctrl-btn { background: none; border: none; fill: #94a3b8; cursor: pointer; display: flex; align-items: center; padding: 5px; }
         .ctrl-btn svg { width: 24px; height: 24px; }
-        .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; box-shadow: 0 0 15px rgba(0,242,255,0.3); }
+        .play-btn { width: 55px; height: 55px; background: var(--neon); border-radius: 50%; display: flex; justify-content: center; align-items: center; fill: #000; box-shadow: 0 0 15px rgba(0,242,255,0.3); border: none; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0a0f1c; border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 1001; }
         .nav-item { color: #64748b; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
         .nav-item.active { color: var(--neon); }
@@ -72,7 +72,7 @@
         <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button>
         <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
         
-        <div class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg></div>
+        <button class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg></button>
         
         <button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
         <button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M11.5 13.5c-1.96 0-3.73.72-5.12 1.88L10 19H1V10l3.6 3.6c1.85-1.61 4.25-2.6 6.9-2.6 4.65 0 8.58 3.03 9.97 7.22l-2.37.78c-1.05-3.19-4.06-5.5-7.6-5.5z"/></svg></button>
@@ -93,7 +93,7 @@
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
     
-    // ТОКЕН (БЕЗ НЕГО НИЧЕГО НЕ РАБОТАЕТ!)
+    // ТОКЕН ЗДЕСЬ (РАЗДЕЛЕН НА ЧАСТИ)
     const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT"; 
     const p2 = "T10FM6e"; 
     const G_TOKEN = p1 + p2;
@@ -102,14 +102,19 @@
     let currentTab = 'home', currentCategory = 'music', curId = null, searchQuery = '', sb = null;
     const audio = document.getElementById('audio-engine');
 
-    try { sb = supabase.createClient(S_URL, S_KEY); } catch(e) {}
+    try { sb = supabase.createClient(S_URL, S_KEY); } catch(e) { console.error("Supabase init error"); }
 
     async function init() {
         const [mF, pF, iF, tF] = await Promise.all([
             fetchGH('music'), fetchGH('podcasts'), fetchGH('photos'), fetchGH('texts')
         ]);
         
-        const mapper = (f) => ({ id: f.name.replace('.mp3', ''), title: decodeURIComponent(f.name.replace('.mp3', '')), artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '' });
+        const mapper = (f) => ({ 
+            id: f.name.replace('.mp3', ''), 
+            title: decodeURIComponent(f.name.replace('.mp3', '')), 
+            artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, 
+            duration: '0:00', likes: 0, lyrics: '' 
+        });
 
         media.music = (Array.isArray(mF) ? mF : []).filter(f => f.name.endsWith('.mp3')).map(mapper);
         media.podcasts = (Array.isArray(pF) ? pF : []).filter(f => f.name.endsWith('.mp3')).map(mapper);
@@ -121,8 +126,10 @@
             if (data) data.forEach(r => {
                 const t = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
                 if (t) { 
-                    t.likes = r.count || 0; t.duration = r.duration || '0:00'; 
-                    t.artist = r.artist || 'Загрузка...'; if(r.cover_data) t.img = r.cover_data;
+                    t.likes = r.count || 0; 
+                    t.duration = r.duration || '0:00'; 
+                    t.artist = r.artist || 'Загрузка...'; 
+                    if(r.cover_data) t.img = r.cover_data;
                     t.lyrics = r.lyrics || '';
                 }
             });
@@ -133,8 +140,9 @@
     async function fetchGH(path) {
         try {
             const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${path}`, {
-                headers: { 'Authorization': `token ${G_TOKEN}` } // Исправлено: добавлен токен
+                headers: { 'Authorization': `token ${G_TOKEN}` }
             });
+            if (!r.ok) return [];
             return await r.json();
         } catch(e) { return []; }
     }
@@ -151,7 +159,7 @@
             const el = document.createElement('div');
             el.className = `media-item ${curId === item.id ? 'active' : ''}`;
             if (currentCategory === 'photos' && currentTab === 'catalog') {
-                el.innerHTML = `<img src="${item.url}" style="width:100%; border-radius:12px;">`;
+                el.innerHTML = `<img src="${item.url}" style="width:100%; border-radius:12px; margin-bottom:10px;">`;
             } else if (currentCategory === 'texts' && currentTab === 'catalog') {
                 el.onclick = () => showText(item.url);
                 el.innerHTML = `<div class="media-info"><div class="media-name">📄 ${item.title}</div></div>`;
@@ -178,12 +186,12 @@
         document.getElementById('now-playing').innerText = t.title;
         document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
         updateBtn(true);
-        scanFile(t); // Запуск сканирования при проигрывании
+        scanFile(t); 
         render();
     }
 
     function scanFile(t) {
-        // Читаем файл напрямую с GitHub токеном, чтобы избежать CORS
+        // Мы скачиваем файл через токен как Blob, чтобы библиотека jsmediatags не ругалась на CORS
         fetch(t.url, { headers: { 'Authorization': `token ${G_TOKEN}` } })
         .then(r => r.blob())
         .then(blob => {
