@@ -20,20 +20,20 @@
         
         /* Сетка для контента */
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-        /* Плитка для фото (4 в ряд) */
-        .content-grid.photo-mode { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-        
+        .content-grid.photo-layout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+
         .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; position: relative; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
         .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
-        .photo-item { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+        
+        .photo-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
         
         .media-info { flex-grow: 1; overflow: hidden; }
         .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 60px; }
         .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
         .item-btns { position: absolute; right: 10px; display: flex; gap: 10px; font-size: 1.1rem; }
         
-        .dev-badge { color: #facc15; font-size: 0.6rem; font-weight: bold; border: 1px solid #facc15; padding: 1px 4px; border-radius: 4px; margin-bottom: 3px; display: inline-block; }
+        .dev-badge { color: #facc15; font-size: 0.6rem; font-weight: bold; border: 1px solid #facc15; padding: 1px 4px; border-radius: 4px; margin-bottom: 4px; display: inline-block; }
 
         .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
         #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -51,7 +51,7 @@
         .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
         
         #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; padding: 25px; align-items: center; justify-content: center; }
-        #modal-content { background: #1e293b; padding: 30px; border-radius: 20px; width: 100%; max-height: 75vh; overflow-y: auto; white-space: pre-wrap; text-align: center; font-size: 0.95rem; line-height: 1.6; }
+        #modal-content { background: #1e293b; padding: 30px; border-radius: 20px; width: 100%; max-height: 75vh; overflow-y: auto; white-space: pre-wrap; text-align: center; }
     </style>
 </head>
 <body>
@@ -134,9 +134,10 @@
         const container = document.getElementById('main-content');
         document.getElementById('catalog-ui').style.display = (currentTab === 'catalog') ? 'block' : 'none';
         container.innerHTML = '';
-        container.classList.remove('photo-mode');
+        container.classList.remove('photo-layout');
         
         let list = [];
+        // ЖЕСТКАЯ ФИЛЬТРАЦИЯ ГЛАВНОЙ
         if (currentTab === 'home') {
             list = media.music.filter(t => t.likes > 0);
         } else if (currentTab === 'my') {
@@ -149,9 +150,10 @@
 
         list.forEach(item => {
             const el = document.createElement('div');
+            // ФОТО СЕТКОЙ 4x4
             if (currentCategory === 'photos' && currentTab === 'catalog') {
-                container.classList.add('photo-mode');
-                el.innerHTML = `<img src="${item.url}" class="photo-item" loading="lazy" onclick="window.open('${item.url}')">`;
+                container.classList.add('photo-layout');
+                el.innerHTML = `<img src="${item.url}" class="photo-thumb" loading="lazy" onclick="window.open('${item.url}')">`;
             } else if (currentCategory === 'texts' && currentTab === 'catalog') {
                 el.className = 'media-item';
                 el.onclick = () => showText(item.url);
@@ -206,15 +208,20 @@
     
     function setCategory(c) { 
         if (c === 'podcasts') {
-            const p = prompt("Доступ ограничен. Пароль:");
-            if (p !== '1285') { alert("Мимо!"); return; }
+            const p = prompt("Доступ только для избранных. Пароль:");
+            if (p !== '1285') { alert("Попробуй еще раз, неофит."); return; }
         }
         currentCategory = c; 
         document.querySelectorAll('.cat-card').forEach(el => el.classList.toggle('active', el.id==='btn-'+c)); 
         render(); 
     }
 
-    function setTab(t) { currentTab = t; document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.id==='tab-'+t)); if(t!=='catalog') currentCategory='music'; render(); }
+    function setTab(t) { 
+        currentTab = t; 
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.id==='tab-'+t)); 
+        if(t === 'home') currentCategory = 'music'; // Сброс на музыку для Главной
+        render(); 
+    }
     
     async function toggleLike(id) { 
         const t = [...media.music, ...media.podcasts].find(x => x.id === id); 
@@ -280,11 +287,16 @@
     async function showText(u) { 
         const r = await fetch(u); 
         const b = await r.arrayBuffer(); 
-        // Автоматическое определение кодировки
-        let txt = new TextDecoder('utf-8').decode(b);
-        if (txt.includes('')) {
+        
+        // УМНОЕ ОПРЕДЕЛЕНИЕ КОДИРОВКИ
+        let decoder = new TextDecoder('utf-8');
+        let txt = decoder.decode(b);
+        
+        // Если видим символ-заменитель (кракозябру), пробуем 1251
+        if (txt.includes('\uFFFD')) {
             txt = new TextDecoder('windows-1251').decode(b);
         }
+        
         document.getElementById('modal-content').innerText = txt; 
         document.getElementById('modal').style.display='flex'; 
     }
