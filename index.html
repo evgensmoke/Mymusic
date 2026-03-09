@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EVGEN MUSIC ULTIMATE</title>
+    <title>EVGEN MUSIC APP</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
@@ -18,13 +18,16 @@
         .cat-card { background: var(--glass); border: 1px solid var(--border); border-radius: 10px; padding: 12px 5px; text-align: center; color: #94a3b8; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .cat-card.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
         .content-grid { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+        .content-grid.photo-layout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
         .media-item { display: flex; align-items: center; background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 10px; cursor: pointer; position: relative; }
         .media-item.active { border-color: var(--neon); background: rgba(0, 242, 255, 0.1); }
         .media-img { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; margin-right: 12px; background: #000; flex-shrink: 0; }
+        .photo-thumb { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
         .media-info { flex-grow: 1; overflow: hidden; }
         .media-name { font-size: 0.9rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 60px; }
         .media-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
         .item-btns { position: absolute; right: 10px; display: flex; gap: 10px; font-size: 1.1rem; }
+        .dev-badge { color: #facc15; font-size: 0.6rem; font-weight: bold; border: 1px solid #facc15; padding: 1px 4px; border-radius: 4px; margin-bottom: 4px; display: inline-block; }
         .player-panel { position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; background: rgba(13, 18, 30, 0.98); border: 1px solid var(--border); border-radius: 24px; padding: 15px; z-index: 1000; backdrop-filter: blur(20px); }
         #now-playing { color: var(--neon); text-align: center; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .progress-area { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin: 10px 0 5px; cursor: pointer; }
@@ -45,10 +48,7 @@
 <body>
 
 <div id="bg-layer"></div>
-<header>
-    <div class="main-title">EVGEN MUSIC</div>
-    <input type="text" class="search-box" placeholder="Поиск..." id="search-input" oninput="handleSearch()">
-</header>
+<header><div class="main-title">EVGEN MUSIC</div><input type="text" class="search-box" placeholder="Поиск..." id="search-input" oninput="handleSearch()"></header>
 
 <div id="catalog-ui" style="display:none;">
     <div class="category-grid">
@@ -88,7 +88,7 @@
 <script>
     const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
-    const p1 = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT", p2 = "T10FM6e", G_TOKEN = p1 + p2;
+    const G_TOKEN = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT" + "T10FM6e";
 
     let media = { music: [], podcasts: [], photos: [], texts: [] };
     let currentTab = 'home', currentCategory = 'music', curId = null, searchQuery = '', sb = null;
@@ -99,23 +99,22 @@
     async function init() {
         const paths = ['music', 'podcasts', 'photos', 'texts'];
         const results = await Promise.all(paths.map(p => fetchGH(p)));
-        const mapTrack = (f, cat) => {
-            const n = f.name.replace('.mp3', '');
-            return { id: n, title: decodeURIComponent(n), artist: 'Загрузка...', url: f.download_url, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '' };
-        };
+        const mapTrack = (f, cat) => ({ id: f.name.replace('.mp3',''), title: decodeURIComponent(f.name.replace('.mp3','')), artist: 'Unknown', url: f.download_url, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '', cat: cat });
+        
         media.music = (results[0]||[]).filter(f=>f.name.endsWith('.mp3')).map(f=>mapTrack(f,'music')).reverse();
         media.podcasts = (results[1]||[]).filter(f=>f.name.endsWith('.mp3')).map(f=>mapTrack(f,'podcasts')).reverse();
-        media.photos = (results[2]||[]).filter(f=>/\.(jpg|png|webp)$/i.test(f.name)).map(f=>({url:f.download_url})).reverse();
+        media.photos = (results[2]||[]).filter(f=>/\.(jpg|png|webp|jpeg)$/i.test(f.name)).map(f=>({url:f.download_url})).reverse();
         media.texts = (results[3]||[]).filter(f=>f.name.endsWith('.txt')).map(f=>({title:f.name.replace('.txt',''), url:f.download_url})).reverse();
 
         if (sb) {
             const { data } = await sb.from('likes').select('*');
             if (data) data.forEach(r => {
                 const t = [...media.music, ...media.podcasts].find(x => x.id === r.song_id);
-                if (t) { t.likes = r.count||0; t.duration = r.duration||'0:00'; t.artist = r.artist||'Неизвестен'; if(r.cover_data) t.img = r.cover_data; t.lyrics = r.lyrics||''; }
+                if (t) { t.likes = r.count||0; t.duration = r.duration||'0:00'; t.artist = r.artist||'Unknown'; if(r.cover_data) t.img = r.cover_data; t.lyrics = r.lyrics||''; }
             });
         }
         render();
+        setupMediaSession();
     }
 
     async function fetchGH(p) { const r = await fetch(`https://api.github.com/repos/${G_USER}/${G_REPO}/contents/${p}`, {headers:{'Authorization':`token ${G_TOKEN}`}}); return r.ok?await r.json():[]; }
@@ -124,23 +123,32 @@
         const container = document.getElementById('main-content');
         document.getElementById('catalog-ui').style.display = (currentTab === 'catalog') ? 'block' : 'none';
         container.innerHTML = '';
-        let list = (currentTab === 'home') ? media.music : (currentTab === 'my') ? [...media.music, ...media.podcasts].filter(t => localStorage.getItem('fav_'+t.id)) : (media[currentCategory] || []);
-        if (searchQuery) list = list.filter(i => (i.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
+        container.classList.remove('photo-layout');
+        
+        let list = [];
+        if (currentTab === 'home') list = media.music.filter(t => t.likes > 0);
+        else if (currentTab === 'my') list = [...media.music, ...media.podcasts].filter(t => localStorage.getItem('fav_'+t.id));
+        else list = (media[currentCategory] || []);
+
+        if (searchQuery) list = list.filter(i => (i.title || i.id || '').toLowerCase().includes(searchQuery.toLowerCase()));
 
         list.forEach(item => {
             const el = document.createElement('div');
-            el.className = `media-item ${curId === item.id ? 'active' : ''}`;
             if (currentCategory === 'photos' && currentTab === 'catalog') {
-                el.innerHTML = `<img src="${item.url}" style="width:100%; border-radius:12px;">`;
+                container.classList.add('photo-layout');
+                el.innerHTML = `<img src="${item.url}" class="photo-thumb" loading="lazy" onclick="window.open('${item.url}')">`;
             } else if (currentCategory === 'texts' && currentTab === 'catalog') {
-                el.onclick = () => showText(item.url);
+                el.className = 'media-item'; el.onclick = () => showText(item.url);
                 el.innerHTML = `<div class="media-info"><div class="media-name">📄 ${item.title}</div></div>`;
             } else {
-                el.onclick = () => play(item);
+                el.className = `media-item ${curId === item.id ? 'active' : ''}`; el.onclick = () => play(item);
+                let badge = (item.cat === 'podcasts') ? '<div class="dev-badge">В РАЗРАБОТКЕ</div>' : '';
                 el.innerHTML = `<img src="${item.img}" class="media-img" onerror="this.src='${DEF_IMG}'">
-                    <div class="media-info"><div class="media-name">${item.title}</div><div class="media-meta">${item.artist} • ${item.duration}</div></div>
-                    <div class="item-btns"><span onclick="event.stopPropagation(); toggleLike('${item.id}')">${localStorage.getItem('lk_'+item.id)?'❤️':'🤍'}</span>
-                    <span onclick="event.stopPropagation(); toggleFav('${item.id}')">${localStorage.getItem('fav_'+item.id)?'⭐':'➕'}</span></div>`;
+                    <div class="media-info">${badge}<div class="media-name">${item.title}</div><div class="media-meta">${item.artist} • ${item.duration}</div></div>
+                    <div class="item-btns">
+                        <span onclick="event.stopPropagation(); toggleLike('${item.id}')">${localStorage.getItem('lk_'+item.id)?'❤️':'🤍'}</span>
+                        <span onclick="event.stopPropagation(); toggleFav('${item.id}')">${localStorage.getItem('fav_'+item.id)?'⭐':'➕'}</span>
+                    </div>`;
             }
             container.appendChild(el);
         });
@@ -148,62 +156,104 @@
 
     function play(t) {
         if (curId === t.id) return toggle();
-        curId = t.id; audio.src = t.url;
-        
-        // Фикс: Сначала дожидаемся загрузки метаданных, чтобы узнать длительность
-        audio.onloadedmetadata = () => {
-            t.duration = formatTime(audio.duration);
-            scanFile(t); // Запускаем синхронизацию только когда время точно известно
-        };
-
-        audio.play().catch(e => console.log("Play error", e));
+        curId = t.id; audio.src = t.url; audio.play().catch(() => {});
         document.getElementById('now-playing').innerText = t.title;
         document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
-        updateBtn(true); 
-        render();
+        updateBtn(true); updateMediaMetadata(t); scanFile(t); render();
+    }
+
+    function setupMediaSession() {
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', toggle);
+            navigator.mediaSession.setActionHandler('pause', toggle);
+            navigator.mediaSession.setActionHandler('previoustrack', prevTrack);
+            navigator.mediaSession.setActionHandler('nexttrack', nextTrack);
+        }
+    }
+
+    function updateMediaMetadata(t) {
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: t.title, artist: t.artist, artwork: [{ src: t.img, sizes: '512x512', type: 'image/jpeg' }]
+            });
+        }
     }
 
     async function scanFile(t) {
         try {
-            const r = await fetch(t.url);
-            const blob = await r.blob();
+            const r = await fetch(t.url); const blob = await r.blob();
             jsmediatags.read(blob, {
                 onSuccess: (tag) => {
-                    const tags = tag.tags;
-                    // Теперь длительность (duration) берется из объекта трека t
-                    let up = { song_id: t.id, count: t.likes, duration: t.duration };
+                    const tags = tag.tags; let up = { song_id: t.id, count: t.likes };
                     if (tags.artist) { t.artist = tags.artist; up.artist = t.artist; }
+                    if (audio.duration) { t.duration = formatTime(audio.duration); up.duration = t.duration; }
                     if (tags.lyrics?.lyrics) { t.lyrics = tags.lyrics.lyrics; up.lyrics = t.lyrics; }
                     if (tags.picture) {
                         const { data, format } = tags.picture;
                         let b = ""; for (let i = 0; i < data.length; i++) b += String.fromCharCode(data[i]);
                         t.img = `data:${format};base64,${window.btoa(b)}`; up.cover_data = t.img;
                         document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
+                        updateMediaMetadata(t);
                     }
                     if (sb) sb.from('likes').upsert(up, { onConflict: 'song_id' }).then(() => render());
                 }
             });
-        } catch(e) { console.error("Scan error", e); }
+        } catch(e) {}
     }
 
     audio.onended = () => nextTrack();
-    function setCategory(c) { currentCategory = c; document.querySelectorAll('.cat-card').forEach(el => el.classList.toggle('active', el.id==='btn-'+c)); render(); }
-    function setTab(t) { currentTab = t; document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.id==='tab-'+t)); if(t!=='catalog') currentCategory='music'; render(); }
-    async function toggleLike(id) { const t = [...media.music, ...media.podcasts].find(x => x.id === id); localStorage.getItem('lk_'+id)?(t.likes--, localStorage.removeItem('lk_'+id)):(t.likes++, localStorage.setItem('lk_'+id,'1')); render(); if(sb) await sb.from('likes').upsert({song_id:id, count:t.likes},{onConflict:'song_id'}); }
+    function setCategory(c) { 
+        if (c === 'podcasts' && prompt("Пароль:") !== '1285') return alert("Мимо!");
+        currentCategory = c; 
+        document.querySelectorAll('.cat-card').forEach(el => el.classList.toggle('active', el.id==='btn-'+c)); render(); 
+    }
+    function setTab(t) { currentTab = t; document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.id==='tab-'+t)); if(t==='home') currentCategory='music'; render(); }
+    async function toggleLike(id) { 
+        const t = [...media.music, ...media.podcasts].find(x => x.id === id); 
+        if (localStorage.getItem('lk_'+id)) { t.likes--; localStorage.removeItem('lk_'+id); } 
+        else { t.likes++; localStorage.setItem('lk_'+id,'1'); }
+        render(); if(sb) await sb.from('likes').upsert({song_id:id, count:t.likes},{onConflict:'song_id'}); 
+    }
     function toggleFav(id) { localStorage.getItem('fav_'+id)?localStorage.removeItem('fav_'+id):localStorage.setItem('fav_'+id,'1'); render(); }
     function toggle() { audio.paused?audio.play():audio.pause(); updateBtn(!audio.paused); }
-    function updateBtn(p) { document.getElementById('p-icon').innerHTML = p?'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>':'<path d="M8 5v14l11-7z"/>'; }
+    function updateBtn(p) { 
+        document.getElementById('p-icon').innerHTML = p?'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>':'<path d="M8 5v14l11-7z"/>'; 
+        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = p ? 'playing' : 'paused';
+    }
     function formatTime(s) { let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
-    audio.ontimeupdate = () => { document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100||0)+'%'; document.getElementById('cur-time').innerText = formatTime(audio.currentTime); if(audio.duration) document.getElementById('dur-time').innerText = formatTime(audio.duration); };
+    audio.ontimeupdate = () => { 
+        document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100||0)+'%'; 
+        document.getElementById('cur-time').innerText = formatTime(audio.currentTime); 
+        if(audio.duration) document.getElementById('dur-time').innerText = formatTime(audio.duration); 
+    };
     function seekByBar(e) { audio.currentTime = (e.offsetX/e.currentTarget.offsetWidth)*audio.duration; }
     function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
-    function nextTrack() { let l = (currentCategory==='podcasts')?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i<l.length-1) play(l[i+1]); }
-    function prevTrack() { let l = (currentCategory==='podcasts')?media.podcasts:media.music; let i = l.findIndex(x=>x.id===curId); if(i>0) play(l[i-1]); }
+    function nextTrack() { 
+        let l = (currentCategory==='podcasts')?media.podcasts:media.music; 
+        let i = l.findIndex(x=>x.id===curId); if(i<l.length-1) play(l[i+1]); 
+    }
+    function prevTrack() { 
+        let l = (currentCategory==='podcasts')?media.podcasts:media.music; 
+        let i = l.findIndex(x=>x.id===curId); if(i>0) play(l[i-1]); 
+    }
     function share() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(navigator.share) navigator.share({title:t?.title, url:window.location.href}); }
-    async function download() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(!t) return; const r = await fetch(t.url); const b = await r.blob(); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = t.title + ".mp3"; a.click(); }
-    function openLyrics() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(t){document.getElementById('modal-content').innerText = t.lyrics||"Текст не найден."; document.getElementById('modal').style.display='flex';} }
-    async function showText(u) { const r = await fetch(u); const d = new TextDecoder('utf-8'); const b = await r.arrayBuffer(); document.getElementById('modal-content').innerText = d.decode(b); document.getElementById('modal').style.display='flex'; }
-
+    async function download() { 
+        const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(!t) return;
+        try {
+            const r = await fetch(t.url); const b = await r.blob();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = t.title + ".mp3"; a.click();
+        } catch(e) { alert("Ошибка при скачивании"); }
+    }
+    function openLyrics() { 
+        const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); 
+        if(t){document.getElementById('modal-content').innerText = t.lyrics||"Текст не найден."; document.getElementById('modal').style.display='flex';} 
+    }
+    async function showText(u) { 
+        const r = await fetch(u); const b = await r.arrayBuffer(); 
+        let txt = new TextDecoder('utf-8').decode(b);
+        if (txt.includes('\uFFFD')) txt = new TextDecoder('windows-1251').decode(b);
+        document.getElementById('modal-content').innerText = txt; document.getElementById('modal').style.display='flex'; 
+    }
     init();
 </script>
 </body>
