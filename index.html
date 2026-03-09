@@ -156,10 +156,21 @@
 
     function play(t) {
         if (curId === t.id) return toggle();
-        curId = t.id; audio.src = t.url; audio.play().catch(() => {});
+        curId = t.id; 
+        audio.src = t.url; 
+        
+        // Новая логика: Ждем, когда метаданные (включая длину) загрузятся
+        audio.onloadedmetadata = () => {
+            t.duration = formatTime(audio.duration);
+            updateMediaMetadata(t); 
+            scanFile(t); // Только теперь сканируем теги и пишем в базу
+        };
+
+        audio.play().catch(() => {});
         document.getElementById('now-playing').innerText = t.title;
         document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
-        updateBtn(true); updateMediaMetadata(t); scanFile(t); render();
+        updateBtn(true); 
+        render();
     }
 
     function setupMediaSession() {
@@ -184,9 +195,10 @@
             const r = await fetch(t.url); const blob = await r.blob();
             jsmediatags.read(blob, {
                 onSuccess: (tag) => {
-                    const tags = tag.tags; let up = { song_id: t.id, count: t.likes };
+                    const tags = tag.tags; 
+                    // Теперь duration берется из уже обновленного объекта t
+                    let up = { song_id: t.id, count: t.likes, duration: t.duration };
                     if (tags.artist) { t.artist = tags.artist; up.artist = t.artist; }
-                    if (audio.duration) { t.duration = formatTime(audio.duration); up.duration = t.duration; }
                     if (tags.lyrics?.lyrics) { t.lyrics = tags.lyrics.lyrics; up.lyrics = t.lyrics; }
                     if (tags.picture) {
                         const { data, format } = tags.picture;
