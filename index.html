@@ -43,6 +43,7 @@
         .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
         #modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 2000; display: none; padding: 25px; align-items: center; justify-content: center; }
         #modal-content { background: #1e293b; padding: 30px; border-radius: 20px; width: 100%; max-height: 75vh; overflow-y: auto; white-space: pre-wrap; text-align: center; }
+        @media (max-width: 480px) { .controls-row { gap: 4px; } .ctrl-btn svg { width: 22px; height: 22px; } .play-btn { width: 48px; height: 48px; } }
     </style>
 </head>
 <body>
@@ -66,13 +67,13 @@
     <div class="progress-area" onclick="seekByBar(event)"><div id="progress-fill"></div></div>
     <div class="time-info"><span id="cur-time">0:00</span><span id="dur-time">0:00</span></div>
     <div class="controls-row">
-        <button class="ctrl-btn" onclick="share()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
+        <button class="ctrl-btn" id="shareBtn" onclick="shareTrack()"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
         <button class="ctrl-btn" onclick="audio.currentTime-=10"><svg viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg></button>
         <button class="ctrl-btn" onclick="prevTrack()"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
         <button class="play-btn" onclick="toggle()"><svg id="p-icon" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg></button>
         <button class="ctrl-btn" onclick="nextTrack()"><svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
         <button class="ctrl-btn" onclick="audio.currentTime+=10"><svg viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/></svg></button>
-        <button class="ctrl-btn" onclick="download()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
+        <button class="ctrl-btn" onclick="downloadTrack()"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></button>
     </div>
 </div>
 
@@ -86,7 +87,7 @@
 <audio id="audio-engine" crossorigin="anonymous"></audio>
 
 <script>
-    const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
+      const S_URL = "https://ojxyjiawdprejvmbsvvj.supabase.co", S_KEY = "sb_publishable_CCjT5fIUcKY-jzlZyzKwLQ_eLfaT1ks";
     const G_USER = 'evgensmoke', G_REPO = 'Mymusic', DEF_IMG = `https://raw.githubusercontent.com/${G_USER}/${G_REPO}/main/default.jpg`;
     const G_TOKEN = "ghp_VXbn0E4In66FtN1bFaV1i8W9kfphT" + "T10FM6e";
 
@@ -99,7 +100,18 @@
     async function init() {
         const paths = ['music', 'podcasts', 'photos', 'texts'];
         const results = await Promise.all(paths.map(p => fetchGH(p)));
-        const mapTrack = (f, cat) => ({ id: f.name.replace('.mp3',''), title: decodeURIComponent(f.name.replace('.mp3','')), artist: 'Unknown', url: f.download_url, img: DEF_IMG, duration: '0:00', likes: 0, lyrics: '', cat: cat });
+        const mapTrack = (f, cat) => ({ 
+            id: f.name.replace('.mp3',''), 
+            title: decodeURIComponent(f.name.replace('.mp3','')), 
+            artist: 'Unknown', 
+            url: f.download_url, 
+            img: DEF_IMG, 
+            duration: '0:00', 
+            likes: 0, 
+            lyrics: '', 
+            cat: cat,
+            fileUrl: f.download_url
+        });
         
         media.music = (results[0]||[]).filter(f=>f.name.endsWith('.mp3')).map(f=>mapTrack(f,'music')).reverse();
         media.podcasts = (results[1]||[]).filter(f=>f.name.endsWith('.mp3')).map(f=>mapTrack(f,'podcasts')).reverse();
@@ -159,33 +171,50 @@
         curId = t.id; 
         audio.src = t.url; 
         
-        // Новая логика: Ждем, когда метаданные (включая длину) загрузятся
         audio.onloadedmetadata = () => {
-            t.duration = formatTime(audio.duration);
+            if (audio.duration && isFinite(audio.duration)) {
+                t.duration = formatTime(audio.duration);
+            }
             updateMediaMetadata(t); 
-            scanFile(t); // Только теперь сканируем теги и пишем в базу
+            scanFile(t);
         };
 
-        audio.play().catch(() => {});
+        audio.play().catch(e => console.log("Автовоспроизведение заблокировано:", e));
         document.getElementById('now-playing').innerText = t.title;
         document.getElementById('bg-layer').style.backgroundImage = `url(${t.img})`;
         updateBtn(true); 
         render();
+        
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'playing';
+        }
     }
 
     function setupMediaSession() {
         if ('mediaSession' in navigator) {
-            navigator.mediaSession.setActionHandler('play', toggle);
-            navigator.mediaSession.setActionHandler('pause', toggle);
-            navigator.mediaSession.setActionHandler('previoustrack', prevTrack);
-            navigator.mediaSession.setActionHandler('nexttrack', nextTrack);
+            navigator.mediaSession.setActionHandler('play', () => { audio.play(); updateBtn(true); });
+            navigator.mediaSession.setActionHandler('pause', () => { audio.pause(); updateBtn(false); });
+            navigator.mediaSession.setActionHandler('previoustrack', () => prevTrack());
+            navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack());
+            navigator.mediaSession.setActionHandler('seekbackward', (details) => { audio.currentTime -= (details.seekOffset || 10); });
+            navigator.mediaSession.setActionHandler('seekforward', (details) => { audio.currentTime += (details.seekOffset || 10); });
         }
     }
 
     function updateMediaMetadata(t) {
-        if ('mediaSession' in navigator) {
+        if ('mediaSession' in navigator && t) {
             navigator.mediaSession.metadata = new MediaMetadata({
-                title: t.title, artist: t.artist, artwork: [{ src: t.img, sizes: '512x512', type: 'image/jpeg' }]
+                title: t.title || 'EVGEN MUSIC',
+                artist: t.artist || 'Unknown Artist',
+                album: t.cat === 'podcasts' ? 'Подкаст' : 'Трек',
+                artwork: [
+                    { src: t.img, sizes: '96x96', type: 'image/jpeg' },
+                    { src: t.img, sizes: '128x128', type: 'image/jpeg' },
+                    { src: t.img, sizes: '192x192', type: 'image/jpeg' },
+                    { src: t.img, sizes: '256x256', type: 'image/jpeg' },
+                    { src: t.img, sizes: '384x384', type: 'image/jpeg' },
+                    { src: t.img, sizes: '512x512', type: 'image/jpeg' }
+                ]
             });
         }
     }
@@ -196,7 +225,6 @@
             jsmediatags.read(blob, {
                 onSuccess: (tag) => {
                     const tags = tag.tags; 
-                    // Теперь duration берется из уже обновленного объекта t
                     let up = { song_id: t.id, count: t.likes, duration: t.duration };
                     if (tags.artist) { t.artist = tags.artist; up.artist = t.artist; }
                     if (tags.lyrics?.lyrics) { t.lyrics = tags.lyrics.lyrics; up.lyrics = t.lyrics; }
@@ -208,12 +236,16 @@
                         updateMediaMetadata(t);
                     }
                     if (sb) sb.from('likes').upsert(up, { onConflict: 'song_id' }).then(() => render());
-                }
+                },
+                onError: (err) => { console.log("Теги не распознаны"); }
             });
-        } catch(e) {}
+        } catch(e) { console.log("Ошибка сканирования файла"); }
     }
 
     audio.onended = () => nextTrack();
+    audio.onplay = () => { updateBtn(true); if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'playing'; };
+    audio.onpause = () => { updateBtn(false); if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused'; };
+    
     function setCategory(c) { 
         if (c === 'podcasts' && prompt("Пароль:") !== '1285') return alert("Мимо!");
         currentCategory = c; 
@@ -230,43 +262,107 @@
     function toggle() { audio.paused?audio.play():audio.pause(); updateBtn(!audio.paused); }
     function updateBtn(p) { 
         document.getElementById('p-icon').innerHTML = p?'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>':'<path d="M8 5v14l11-7z"/>'; 
-        if ('mediaSession' in navigator) navigator.mediaSession.playbackState = p ? 'playing' : 'paused';
     }
-    function formatTime(s) { let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
+    function formatTime(s) { if(!isFinite(s)) return "0:00"; let m=Math.floor(s/60), sc=Math.floor(s%60); return `${m}:${sc<10?'0':''}${sc}`; }
     audio.ontimeupdate = () => { 
-        document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100||0)+'%'; 
-        document.getElementById('cur-time').innerText = formatTime(audio.currentTime); 
-        if(audio.duration) document.getElementById('dur-time').innerText = formatTime(audio.duration); 
+        if(audio.duration && isFinite(audio.duration)) {
+            document.getElementById('progress-fill').style.width = (audio.currentTime/audio.duration*100)+'%'; 
+            document.getElementById('cur-time').innerText = formatTime(audio.currentTime); 
+            document.getElementById('dur-time').innerText = formatTime(audio.duration); 
+        }
     };
-    function seekByBar(e) { audio.currentTime = (e.offsetX/e.currentTarget.offsetWidth)*audio.duration; }
+    function seekByBar(e) { 
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percent = x / rect.width;
+        audio.currentTime = percent * audio.duration; 
+    }
     function handleSearch() { searchQuery = document.getElementById('search-input').value; render(); }
     function nextTrack() { 
         let l = (currentCategory==='podcasts')?media.podcasts:media.music; 
-        let i = l.findIndex(x=>x.id===curId); if(i<l.length-1) play(l[i+1]); 
+        let i = l.findIndex(x=>x.id===curId); 
+        if(i < l.length-1 && i !== -1) play(l[i+1]); 
+        else if(l.length > 0 && curId === null) play(l[0]);
     }
     function prevTrack() { 
         let l = (currentCategory==='podcasts')?media.podcasts:media.music; 
-        let i = l.findIndex(x=>x.id===curId); if(i>0) play(l[i-1]); 
+        let i = l.findIndex(x=>x.id===curId); 
+        if(i > 0) play(l[i-1]); 
     }
-    function share() { const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(navigator.share) navigator.share({title:t?.title, url:window.location.href}); }
-    async function download() { 
-        const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); if(!t) return;
+    
+    async function shareTrack() {
+        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
+        if (!t) return alert("Сначала выберите трек");
+        
+        let fileToShare = null;
         try {
-            const r = await fetch(t.url); const b = await r.blob();
-            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = t.title + ".mp3"; a.click();
-        } catch(e) { alert("Ошибка при скачивании"); }
+            const response = await fetch(t.url);
+            const blob = await response.blob();
+            fileToShare = new File([blob], `${t.title}.mp3`, { type: 'audio/mpeg' });
+        } catch(e) { console.log("Не удалось загрузить файл для шаринга"); }
+        
+        const shareData = {
+            title: t.title,
+            text: `🎵 Слушаю "${t.title}" - ${t.artist} в EVGEN MUSIC APP`,
+            url: window.location.href
+        };
+        
+        if (fileToShare && navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
+            try {
+                await navigator.share({ ...shareData, files: [fileToShare] });
+                return;
+            } catch(e) { console.log("Шаринг с файлом не удался, пробуем без файла"); }
+        }
+        
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch(e) { if(e.name !== 'AbortError') alert("Ошибка при открытии панели шаринга"); }
+        } else {
+            try {
+                await navigator.clipboard.writeText(`${t.title} - ${t.artist}\nСлушайте в EVGEN MUSIC APP`);
+                alert("Информация о треке скопирована в буфер обмена!");
+            } catch(e) { alert("Ваш браузер не поддерживает шаринг"); }
+        }
     }
+    
+    async function downloadTrack() {
+        const t = [...media.music, ...media.podcasts].find(x => x.id === curId);
+        if(!t) return alert("Нет активного трека");
+        try {
+            const response = await fetch(t.url);
+            if (!response.ok) throw new Error("Ошибка загрузки");
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${t.title.replace(/[/\\:*?"<>|]/g, '')}.mp3`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch(e) { alert("Не удалось скачать трек: " + e.message); }
+    }
+    
     function openLyrics() { 
         const t = [...media.music, ...media.podcasts].find(x=>x.id===curId); 
-        if(t){document.getElementById('modal-content').innerText = t.lyrics||"Текст не найден."; document.getElementById('modal').style.display='flex';} 
+        if(t){document.getElementById('modal-content').innerText = t.lyrics || "Текст песни не добавлен в теги ID3."; document.getElementById('modal').style.display='flex';} 
+        else { alert("Нет выбранного трека"); }
     }
+    
     async function showText(u) { 
         const r = await fetch(u); const b = await r.arrayBuffer(); 
         let txt = new TextDecoder('utf-8').decode(b);
         if (txt.includes('\uFFFD')) txt = new TextDecoder('windows-1251').decode(b);
         document.getElementById('modal-content').innerText = txt; document.getElementById('modal').style.display='flex'; 
     }
+    
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('previoustrack', () => prevTrack());
+        navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack());
+    }
+    
     init();
 </script>
 </body>
-</html>
+</html>  
